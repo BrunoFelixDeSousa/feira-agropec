@@ -1,14 +1,14 @@
 "use client"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Bell, Calendar, Heart, Home, MapPin, Users, Menu } from "lucide-react"
-import { cn } from "@/lib/utils"
 import { InstallPWA } from "@/components/install-pwa"
-import { motion } from "framer-motion"
-import { useState, useEffect } from "react"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { cn } from "@/lib/utils"
+import { motion } from "framer-motion"
+import { Bell, Calendar, Heart, Home, MapPin, Menu, Users } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -166,7 +166,7 @@ export default function Navbar() {
       </nav>
 
       {/* Espaçador para compensar a navegação fixa na parte inferior - apenas para mobile */}
-      <div className="h-16 lg:h-0"></div>
+      {/* <div className="h-16 lg:h-0"></div> */}
     </>
   )
 }

@@ -1,6 +1,6 @@
-import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
+import type React from "react"
 
 import { ConditionalFooter } from "@/components/conditional-footer"
 import { InstallPWA } from "@/components/install-pwa"
@@ -44,7 +44,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <FavoritesProvider>
             <div className="flex min-h-screen flex-col">
-              {/* <Navbar /> */}
+              <Navbar />
               <main className="flex-1 pb-4">{children}</main>
               <ConditionalFooter />
             </div>
