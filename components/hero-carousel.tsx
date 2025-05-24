@@ -1,45 +1,19 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
-import { motion, AnimatePresence, type PanInfo } from "framer-motion"
-import { useMobile } from "@/hooks/use-mobile"
+import { Button } from "@/components/ui/button";
+import { useMobile } from "@/hooks/use-mobile";
+import { CarouselSlide } from "@/lib/types"; // ou ajuste o import conforme seu projeto
+import { AnimatePresence, motion, type PanInfo } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-// Slides do carrossel
-const slides = [
-  {
-    id: 1,
-    title: "Feira Agropecuária",
-    subtitle: "15 a 20 de Agosto • Paragominas",
-    image: "/placeholder.svg?height=800&width=1600",
-    primaryButton: { text: "Programação", link: "/programacao" },
-    secondaryButton: { text: "Mapa", link: "/mapa" },
-    color: "from-green-900/80 to-green-800/60",
-  },
-  {
-    id: 2,
-    title: "Shows Nacionais",
-    subtitle: "As melhores atrações musicais",
-    image: "/placeholder.svg?height=800&width=1600",
-    primaryButton: { text: "Ver Shows", link: "/programacao" },
-    secondaryButton: { text: "Ingressos", link: "/ingressos" },
-    color: "from-purple-900/80 to-purple-800/60",
-  },
-  {
-    id: 3,
-    title: "Exposição de Animais",
-    subtitle: "Os melhores exemplares da região",
-    image: "/placeholder.svg?height=800&width=1600",
-    primaryButton: { text: "Expositores", link: "/expositores" },
-    secondaryButton: { text: "Leilões", link: "/programacao" },
-    color: "from-amber-900/80 to-amber-800/60",
-  },
-]
+interface HeroCarouselProps {
+  slides: CarouselSlide[]
+}
 
-export function HeroCarousel() {
+export function HeroCarousel({ slides }: HeroCarouselProps) {
   const [current, setCurrent] = useState(0)
   const [autoplay, setAutoplay] = useState(true)
   const [direction, setDirection] = useState(0)
@@ -131,26 +105,19 @@ export function HeroCarousel() {
               className="object-cover brightness-75"
               priority
             />
-            <div className={`absolute inset-0 bg-gradient-to-t ${slides[current].color}`}></div>
 
             <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6 md:p-10 lg:p-16 text-white container mx-auto">
               <div className="max-w-3xl">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 md:mb-2">
                   {slides[current].title}
                 </h1>
-                <p className="text-base sm:text-lg md:text-xl mb-3 sm:mb-4 md:mb-6">{slides[current].subtitle}</p>
+                <p className="text-base sm:text-lg md:text-xl mb-3 sm:mb-4 md:mb-6">{slides[current].description}</p>
                 <div className="flex gap-2">
-                  <Button asChild size={isMobile ? "sm" : "default"} className="bg-green-600 hover:bg-green-700">
-                    <Link href={slides[current].primaryButton.link}>{slides[current].primaryButton.text}</Link>
-                  </Button>
-                  <Button
-                    asChild
-                    size={isMobile ? "sm" : "default"}
-                    variant="outline"
-                    className="text-white border-white hover:bg-white/10"
-                  >
-                    <Link href={slides[current].secondaryButton.link}>{slides[current].secondaryButton.text}</Link>
-                  </Button>
+                  {slides[current].link && (
+                    <Button asChild size={isMobile ? "sm" : "default"} className="bg-green-600 hover:bg-green-700">
+                      <Link href={slides[current].link}>Saiba mais</Link>
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

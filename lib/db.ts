@@ -1,5 +1,5 @@
-import { prisma } from "./prisma"
-import type { Event, Exhibitor, Notification, User, SiteSettings } from "@prisma/client"
+import type { Event, Exhibitor, Notification, SiteSettings, User } from "@prisma/client"
+import prisma from "./prisma"
 
 // Funções para Events
 export async function getAllEvents() {
@@ -54,15 +54,25 @@ export async function getExhibitorById(id: string) {
 }
 
 export async function createExhibitor(data: Omit<Exhibitor, "id" | "createdAt" | "updatedAt">) {
+  // Ensure mapPosition is compatible with Prisma's expected input type
+  const { mapPosition, ...rest } = data
   return prisma.exhibitor.create({
-    data,
+    data: {
+      ...rest,
+      mapPosition: mapPosition === null ? undefined : (mapPosition as any),
+    },
   })
 }
 
 export async function updateExhibitor(id: string, data: Partial<Omit<Exhibitor, "id" | "createdAt" | "updatedAt">>) {
+  // Ensure mapPosition is compatible with Prisma's expected input type
+  const { mapPosition, ...rest } = data
   return prisma.exhibitor.update({
     where: { id },
-    data,
+    data: {
+      ...rest,
+      ...(mapPosition !== undefined ? { mapPosition: mapPosition as any } : {}),
+    },
   })
 }
 
@@ -143,7 +153,7 @@ export async function getAllCarouselSlides() {
 
 // Funções para SiteSettings
 export async function getSiteSettings() {
-  const settings = await prisma.siteSettings.findFirst()
+  const settings = prisma.siteSettings.findFirst()
   if (!settings) {
     // Criar configurações padrão se não existirem
     return prisma.siteSettings.create({
