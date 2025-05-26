@@ -3,8 +3,8 @@ import { Inter } from "next/font/google"
 import type React from "react"
 
 import { ConditionalFooter } from "@/components/conditional-footer"
+import { ConditionalNavbar } from "@/components/conditional-navbar"
 import { InstallPWA } from "@/components/install-pwa"
-import Navbar from "@/components/navbar"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { FavoritesProvider } from "@/lib/favorites"
@@ -44,7 +44,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <FavoritesProvider>
             <div className="flex min-h-screen flex-col">
-              <Navbar />
+              <ConditionalNavbar />
               <main className="flex-1 pb-4">{children}</main>
               <ConditionalFooter />
             </div>
