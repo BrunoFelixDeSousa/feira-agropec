@@ -1,5 +1,8 @@
 import type { Event, Exhibitor, Notification } from "./types"
 
+export const eventStartDate = new Date("2025-08-09T19:00:00Z").toISOString()
+export const eventEndDate = new Date("2023-08-20T18:00:00Z").toISOString()
+
 export const mockEvents: Event[] = [
   {
     id: "1",
@@ -7,9 +10,14 @@ export const mockEvents: Event[] = [
     description: "Cerimônia oficial de abertura da Feira Agropecuária de Paragominas com autoridades locais.",
     date: "15/08/2023",
     time: "19:00",
+    endTime: "21:00",
     location: "Palco Principal",
     type: "Cerimônia",
     featured: true,
+    image: null,
+    tags: ["abertura", "cerimônia", "oficial"],
+    createdAt: new Date("2023-07-01T10:00:00Z"),
+    updatedAt: new Date("2023-07-15T14:30:00Z"),
   },
   {
     id: "2",
@@ -17,9 +25,14 @@ export const mockEvents: Event[] = [
     description: "Leilão de gado da raça Nelore com exemplares de alta qualidade genética.",
     date: "16/08/2023",
     time: "14:00",
+    endTime: "17:00",
     location: "Pavilhão de Leilões",
     type: "Leilão",
     featured: true,
+    image: null,
+    tags: ["leilão", "gado", "nelore", "genética"],
+    createdAt: new Date("2023-07-01T10:00:00Z"),
+    updatedAt: new Date("2023-07-15T14:30:00Z"),
   },
   {
     id: "3",
@@ -27,9 +40,14 @@ export const mockEvents: Event[] = [
     description: "Palestra sobre as mais recentes tecnologias aplicadas à agricultura de precisão.",
     date: "16/08/2023",
     time: "10:00",
+    endTime: "12:00",
     location: "Auditório Central",
     type: "Palestra",
     featured: false,
+    image: null,
+    tags: ["palestra", "tecnologia", "agricultura", "precisão"],
+    createdAt: new Date("2023-07-01T10:00:00Z"),
+    updatedAt: new Date("2023-07-15T14:30:00Z"),
   },
   {
     id: "4",
@@ -37,9 +55,14 @@ export const mockEvents: Event[] = [
     description: "Workshop prático sobre técnicas de manejo sustentável de pastagens.",
     date: "17/08/2023",
     time: "09:00",
+    endTime: "12:00",
     location: "Sala de Treinamento 2",
     type: "Workshop",
     featured: false,
+    image: null,
+    tags: ["workshop", "manejo", "sustentável", "pastagens"],
+    createdAt: new Date("2023-07-01T10:00:00Z"),
+    updatedAt: new Date("2023-07-15T14:30:00Z"),
   },
   {
     id: "5",
@@ -47,19 +70,29 @@ export const mockEvents: Event[] = [
     description: "Show com grande artista do cenário musical nacional.",
     date: "17/08/2023",
     time: "21:00",
+    endTime: "23:30",
     location: "Arena de Shows",
     type: "Show",
     featured: true,
+    image: null,
+    tags: ["show", "música", "artista", "nacional"],
+    createdAt: new Date("2023-07-01T10:00:00Z"),
+    updatedAt: new Date("2023-07-15T14:30:00Z"),
   },
   {
     id: "6",
     title: "Exposição de Máquinas Agrícolas",
     description: "Demonstração das mais modernas máquinas e implementos agrícolas do mercado.",
     date: "18/08/2023",
-    time: "10:00 - 18:00",
+    time: "10:00",
+    endTime: "18:00",
     location: "Área Externa",
     type: "Exposição",
     featured: false,
+    image: null,
+    tags: ["exposição", "máquinas", "agrícolas", "implementos"],
+    createdAt: new Date("2023-07-01T10:00:00Z"),
+    updatedAt: new Date("2023-07-15T14:30:00Z"),
   },
   {
     id: "7",
@@ -67,9 +100,14 @@ export const mockEvents: Event[] = [
     description: "Competição entre produtores para premiar os animais com maior produção de leite.",
     date: "18/08/2023",
     time: "15:00",
+    endTime: "17:00",
     location: "Pavilhão da Pecuária",
     type: "Concurso",
     featured: false,
+    image: null,
+    tags: ["concurso", "leiteiro", "produção", "leite"],
+    createdAt: new Date("2023-07-01T10:00:00Z"),
+    updatedAt: new Date("2023-07-15T14:30:00Z"),
   },
   {
     id: "8",
@@ -77,9 +115,14 @@ export const mockEvents: Event[] = [
     description: "Grande final do rodeio com os melhores competidores da região.",
     date: "19/08/2023",
     time: "20:00",
+    endTime: "22:30",
     location: "Arena de Rodeio",
     type: "Rodeio",
     featured: true,
+    image: null,
+    tags: ["rodeio", "final", "competição", "região"],
+    createdAt: new Date("2023-07-01T10:00:00Z"),
+    updatedAt: new Date("2023-07-15T14:30:00Z"),
   },
   {
     id: "9",
@@ -87,9 +130,14 @@ export const mockEvents: Event[] = [
     description: "Demonstração prática de técnicas de cultivo de soja adaptadas à região.",
     date: "19/08/2023",
     time: "09:00",
+    endTime: "12:00",
     location: "Área de Demonstração",
     type: "Dia de Campo",
     featured: false,
+    image: null,
+    tags: ["dia de campo", "cultivo", "soja", "demonstração"],
+    createdAt: new Date("2023-07-01T10:00:00Z"),
+    updatedAt: new Date("2023-07-15T14:30:00Z"),
   },
   {
     id: "10",
@@ -97,9 +145,14 @@ export const mockEvents: Event[] = [
     description: "Cerimônia de encerramento e premiação dos concursos realizados durante a feira.",
     date: "20/08/2023",
     time: "18:00",
+    endTime: "20:00",
     location: "Palco Principal",
     type: "Cerimônia",
     featured: true,
+    image: null,
+    tags: ["encerramento", "premiação", "cerimônia", "concursos"],
+    createdAt: new Date("2023-07-01T10:00:00Z"),
+    updatedAt: new Date("2023-07-15T14:30:00Z"),
   },
 ]
 
@@ -313,7 +366,7 @@ export const mockNotifications: Notification[] = [
   },
 ]
 
-export const events = [
+export const mockNotificationEvents = [
   {
     id: "1",
     title: "Abertura da Feira",

@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useMobile } from "@/hooks/use-mobile"
 import { useFavoritesContext } from "@/lib/favorites"
-import { mockEvents, mockExhibitors } from "@/lib/mock-data"
+import { eventStartDate, mockEvents, mockExhibitors } from "@/lib/mock-data"
 import { motion } from "framer-motion"
 import { Bell, Calendar, CalendarDays, ChevronRight, Clock, Info, MapPin, Star, Users } from "lucide-react"
 import Image from "next/image"
@@ -85,7 +85,7 @@ export function HomeContent() {
       <div className="lg:col-span-2 space-y-6">
         {/* Countdown Timer */}
         <motion.div initial="hidden" animate={isLoaded ? "visible" : "hidden"} variants={fadeInUp}>
-          <CountdownTimer targetDate="2023-08-15T00:00:00" />
+          <CountdownTimer targetDate={ eventStartDate } />
         </motion.div>
 
         {/* Tabs para Eventos e Expositores em Destaque */}
