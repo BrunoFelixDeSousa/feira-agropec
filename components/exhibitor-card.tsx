@@ -1,11 +1,11 @@
-import { Card, CardContent } from "@/components/ui/card"
+import { FavoriteButton } from "@/components/favorite-button"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, ExternalLink, Phone, Mail } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import type { Exhibitor } from "@/lib/types"
+import { ExternalLink, Mail, MapPin, Phone } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import type { Exhibitor } from "@/lib/types"
-import { FavoriteButton } from "@/components/favorite-button"
-import { Button } from "@/components/ui/button"
 
 interface ExhibitorCardProps {
   exhibitor: Exhibitor
@@ -52,7 +52,7 @@ export function ExhibitorCard({ exhibitor, layout = "grid", showFavorite = false
                   </Badge>
                   <div className="flex items-center text-[10px] sm:text-xs text-muted-foreground mt-1">
                     <MapPin className="mr-1 h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                    {exhibitor.location.stand}
+                    {exhibitor.location}
                   </div>
                 </div>
 
@@ -62,18 +62,18 @@ export function ExhibitorCard({ exhibitor, layout = "grid", showFavorite = false
               </div>
 
               <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
-                {exhibitor.contact?.phone && (
+                {exhibitor?.phone && (
                   <Button variant="outline" size="sm" className="h-6 sm:h-7 text-[10px] sm:text-xs gap-1" asChild>
-                    <Link href={`tel:${exhibitor.contact.phone}`}>
+                    <Link href={`tel:${exhibitor.phone}`}>
                       <Phone className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                       Ligar
                     </Link>
                   </Button>
                 )}
 
-                {exhibitor.contact?.email && (
+                {exhibitor?.email && (
                   <Button variant="outline" size="sm" className="h-6 sm:h-7 text-[10px] sm:text-xs gap-1" asChild>
-                    <Link href={`mailto:${exhibitor.contact.email}`}>
+                    <Link href={`mailto:${exhibitor.email}`}>
                       <Mail className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                       Email
                     </Link>
@@ -126,7 +126,7 @@ export function ExhibitorCard({ exhibitor, layout = "grid", showFavorite = false
         </Badge>
         <div className="flex items-center text-[10px] sm:text-xs text-muted-foreground mt-1">
           <MapPin className="mr-1 h-2.5 w-2.5 sm:h-3 sm:w-3" />
-          {exhibitor.location.stand}
+          {exhibitor.location}
         </div>
 
         <p className="text-[10px] sm:text-xs text-muted-foreground mt-2 line-clamp-2">{exhibitor.description}</p>

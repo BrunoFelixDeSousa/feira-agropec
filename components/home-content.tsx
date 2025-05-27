@@ -8,14 +8,21 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useMobile } from "@/hooks/use-mobile"
 import { useFavoritesContext } from "@/lib/favorites"
-import { eventStartDate, mockEvents, mockExhibitors } from "@/lib/mock-data"
+import { Event, Exhibitor } from "@/lib/types"
 import { motion } from "framer-motion"
 import { Bell, Calendar, CalendarDays, ChevronRight, Clock, Info, MapPin, Star, Users } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
-export function HomeContent() {
+interface HomeContentProps {
+  events: Event[]
+  exhibitors: Exhibitor[]
+  eventStartDate: string,
+  statsField: {totalEvents: number, totalExhibitors: number}
+}
+
+export function HomeContent({ events, eventStartDate, exhibitors, statsField }: HomeContentProps) {
   const [isLoaded, setIsLoaded] = useState(false)
   const { isFavorite } = useFavoritesContext()
   const isMobile = useMobile()
@@ -26,7 +33,7 @@ export function HomeContent() {
   }, [])
 
   // Filtrar eventos em destaque
-  const featuredEvents = mockEvents
+  const featuredEvents = events
     .filter((event) => event.featured)
     .sort((a, b) => {
       // Ordenar por data
@@ -36,13 +43,13 @@ export function HomeContent() {
     })
     .slice(0, isMobile ? 3 : 4)
 
-  // Filtrar expositores em destaque (simulado usando os primeiros 4 ou 6)
-  const featuredExhibitors = mockExhibitors.slice(0, isMobile ? 4 : 6)
+  // Filtrar expositores em destaque (usando os primeiros 4 ou 6)
+  const featuredExhibitors = exhibitors.slice(0, isMobile ? 4 : 6)
 
   // Estatísticas da feira
   const stats = [
-    { label: "Expositores", value: "120+" },
-    { label: "Eventos", value: "50+" },
+    { label: "Expositores", value: `${statsField.totalExhibitors}+` },
+    { label: "Eventos", value: `${statsField.totalEvents}+` },
     { label: "Área", value: "30.000m²" },
     { label: "Visitantes", value: "25.000+" },
   ]
@@ -188,7 +195,7 @@ export function HomeContent() {
                         <h3 className="font-medium text-xs sm:text-sm line-clamp-1">{exhibitor.name}</h3>
                         <div className="flex items-center text-xs text-muted-foreground mt-1">
                           <MapPin className="h-3 w-3 mr-1" />
-                          {exhibitor.location.stand}
+                          {exhibitor.location}
                         </div>
                       </Link>
                     </CardContent>
@@ -310,9 +317,9 @@ export function HomeContent() {
                     reunindo produtores rurais, empresas do agronegócio e visitantes. Com uma programação
                     diversificada, a feira oferece exposições, leilões, palestras, shows e muito mais.
                   </p>
-                  <Button asChild size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                  {/* <Button asChild size="sm" className="bg-green-600 hover:bg-green-700 text-white">
                     <Link href="/sobre">Saiba mais</Link>
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </CardContent>
