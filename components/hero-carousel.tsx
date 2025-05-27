@@ -7,7 +7,7 @@ import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface HeroCarouselProps {
   slides: CarouselSlide[]
@@ -17,7 +17,6 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
   const [current, setCurrent] = useState(0)
   const [autoplay, setAutoplay] = useState(true)
   const [direction, setDirection] = useState(0)
-  const touchStartX = useRef(0)
   const isMobile = useMobile()
 
   const nextSlide = useCallback(() => {
