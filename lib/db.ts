@@ -1,11 +1,17 @@
-import type { Event, Exhibitor, Notification, SiteSettings, User } from "@prisma/client"
-import prisma from "./prisma"
+import type { Event, Exhibitor, Notification, SiteSettings, User } from "@prisma/client";
+import prisma from "./prisma";
 
 // Funções para Events
 export async function getAllEvents() {
-  return prisma.event.findMany({
-    orderBy: { date: "asc" },
-  })
+  try {
+    const events = await prisma.event.findMany({
+      orderBy: { date: "asc" },
+    });
+    return events;
+  } catch (error) {
+    console.error("❌ Erro ao buscar eventos:", error);
+    throw new Error("Erro ao buscar eventos do banco de dados");
+  }
 }
 
 export async function getEventById(id: string) {
@@ -146,14 +152,14 @@ export async function getActiveCarouselSlides() {
 }
 
 export async function getAllCarouselSlides() {
-  return prisma.carouselSlide.findMany({
+  return await prisma.carouselSlide.findMany({
     orderBy: { order: "asc" },
   })
 }
 
 // Funções para SiteSettings
 export async function getSiteSettings() {
-  const settings = prisma.siteSettings.findFirst()
+  const settings = await prisma.siteSettings.findFirst()
   if (!settings) {
     // Criar configurações padrão se não existirem
     return prisma.siteSettings.create({
