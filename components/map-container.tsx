@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { mockExhibitors } from "@/lib/mock-data"
 import { Navigation } from "lucide-react"
+import { getAllEvents } from "@/app/api/events/actions"
 
 interface MapContainerProps {
   zoomLevel: number
@@ -26,6 +27,26 @@ const categoryColors: Record<string, string> = {
   Energia: "bg-orange-600",
 }
 
+interface StandsProps {
+  id: string
+        name: string
+        description: string
+        category: string
+        location: string
+        booth: string
+        logo: string | null
+        website: string | null
+        phone: string | null
+        email: string | null
+        featured: boolean
+        mapPosition: {
+          x: number
+          y: number
+        }
+        createdAt: Date
+        updatedAt: Date
+}
+
 export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocation }: MapContainerProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -35,10 +56,21 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
   const [mapDimensions, setMapDimensions] = useState({ width: 1000, height: 800 })
   const [showTooltip, setShowTooltip] = useState<{ id: string; x: number; y: number } | null>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
-
+  const [standData, setStandData]= useState<StandsProps[]>([])
   // Filtrar expositores com base no filtro selecionado
+  useEffect(()=>{
+    const getApi = async()=>{
+      const response = await getAllEvents()
+      if(response.success){
+        console.log(response)
+        // setStandData(response.data)
+      }
+    }
+    getApi()
+  },[location])
+
   const filteredExhibitors = filter
-    ? mockExhibitors.filter((exhibitor) => exhibitor.location.area === filter)
+    ? mockExhibitors.filter((exhibitor) => exhibitor.location === filter)
     : mockExhibitors
 
   // Centralizar o mapa quando o componente é montado ou o filtro muda
@@ -235,15 +267,26 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
               key={exhibitor.id}
               className={`absolute ${getMarkerColor(exhibitor.category)} text-white rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:scale-110 transition-all shadow-lg`}
               style={{
-                left: `${exhibitor.location.x}px`,
-                top: `${exhibitor.location.y}px`,
+                left: `${exhibitor.mapPosition?.x}px`,
+                top: `${exhibitor.mapPosition?.y}px`,
                 transform: "translate(-50%, -50%)",
               }}
               onClick={() => handleExhibitorClick(exhibitor.id)}
-              onMouseEnter={() => handleExhibitorHover(exhibitor.id, exhibitor.location.x, exhibitor.location.y)}
+              onMouseEnter={() => {
+                const pos = exhibitor.mapPosition;
+                if (
+                  pos &&
+                  typeof pos === 'object' &&
+                  'x' in pos &&
+                  'y' in pos
+                ) {
+                  const { x, y } = pos as { x: number; y: number };
+                  handleExhibitorHover(exhibitor.id, x, y);
+                }
+              }}
               onMouseLeave={() => setShowTooltip(null)}
             >
-              <span className="font-bold">{exhibitor.location.stand.split("-")[1]}</span>
+              <span className="font-bold">{exhibitor.location.split("-")[1]}</span>
             </div>
           ))}
 
