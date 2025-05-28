@@ -1,54 +1,83 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent } from "@/components/ui/card"
-import { ExhibitorCard } from "@/components/exhibitor-card"
 import { EventCard } from "@/components/event-card"
-import { useFavoritesContext } from "@/lib/favorites"
-import { mockExhibitors, mockEvents } from "@/lib/mock-data"
-import { Heart, Search } from "lucide-react"
+import { ExhibitorCard } from "@/components/exhibitor-card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useFavoritesContext } from "@/lib/favorites"
+import { Event, Exhibitor } from "@/lib/types"
+import { Heart, Search } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export default function FavoritosPage() {
   const { getFavoritesByType, isLoaded } = useFavoritesContext()
   const [searchTerm, setSearchTerm] = useState("")
-  const [favoriteExhibitors, setFavoriteExhibitors] = useState<typeof mockExhibitors>([])
-  const [favoriteEvents, setFavoriteEvents] = useState<typeof mockEvents>([])
+  const [exhibitors, setExhibitors] = useState<Exhibitor[]>([])
+  const [events, setEvents] = useState<Event[]>([])
 
+  // Buscar expositores e eventos do banco de dados quando o componente montar
   useEffect(() => {
     if (isLoaded) {
-      // Obter IDs dos favoritos
-      const exhibitorFavorites = getFavoritesByType("exhibitor")
-      const eventFavorites = getFavoritesByType("event")
+      async function fetchExhibitors() {
+        try {
+          const res = await fetch("/api/exhibitors");
+          const { success, data: exhibitors } = await res.json();
+          if (exhibitors && success) {
+            setExhibitors(exhibitors);
+          }
+        } catch (error) {
+          console.error("Erro ao buscar expositores:", error);
+        }
+      }
 
-      // Filtrar os dados mockados pelos IDs dos favoritos
-      const exhibitors = mockExhibitors.filter((exhibitor) => exhibitorFavorites.some((fav) => fav.id === exhibitor.id))
-      const events = mockEvents.filter((event) => eventFavorites.some((fav) => fav.id === event.id))
+      async function fetchEvents() {
+        try {
+          const res = await fetch("/api/events");
+          const { success, data: events } = await res.json();
+          if (events && success) {
+            setEvents(events);
+          }
+        } catch (error) {
+          console.error("Erro ao buscar eventos:", error);
+        }
+      }
 
-      // Aplicar filtro de busca se houver
-      const filteredExhibitors = searchTerm
-        ? exhibitors.filter(
-            (exhibitor) =>
-              exhibitor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              exhibitor.category.toLowerCase().includes(searchTerm.toLowerCase()),
-          )
-        : exhibitors
-
-      const filteredEvents = searchTerm
-        ? events.filter(
-            (event) =>
-              event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              event.type.toLowerCase().includes(searchTerm.toLowerCase()),
-          )
-        : events
-
-      setFavoriteExhibitors(filteredExhibitors)
-      setFavoriteEvents(filteredEvents)
+      fetchExhibitors();
+      fetchEvents();
     }
-  }, [isLoaded, getFavoritesByType, searchTerm])
+  }, [isLoaded]);
+
+  // Obter IDs dos favoritos
+  const exhibitorFavorites = getFavoritesByType("exhibitor");
+  const eventFavorites = getFavoritesByType("event");
+
+  // Filtrar os dados pelos IDs dos favoritos
+  const favoriteExhibitors = exhibitors.filter((exhibitor) =>
+    exhibitorFavorites.some((fav) => fav.id === exhibitor.id)
+  );
+  const favoriteEvents = events.filter((event) =>
+    eventFavorites.some((fav) => fav.id === event.id)
+  );
+
+  // Aplicar filtro de busca se houver
+  const filteredExhibitors = searchTerm
+    ? favoriteExhibitors.filter(
+        (exhibitor) =>
+          exhibitor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          exhibitor.category.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : favoriteExhibitors;
+
+  const filteredEvents = searchTerm
+    ? favoriteEvents.filter(
+        (event) =>
+          event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          event.type.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : favoriteEvents;
 
   return (
     <div className="px-4 py-4">
@@ -76,9 +105,9 @@ export default function FavoritosPage() {
 
         <TabsContent value="expositores" className="mt-0">
           <ScrollArea className="h-[calc(100vh-13rem)]">
-            {favoriteExhibitors.length > 0 ? (
+            {filteredExhibitors.length > 0 ? (
               <div className="grid gap-3">
-                {favoriteExhibitors.map((exhibitor) => (
+                {filteredExhibitors.map((exhibitor) => (
                   <ExhibitorCard key={exhibitor.id} exhibitor={exhibitor} layout="list" showFavorite />
                 ))}
               </div>
@@ -98,9 +127,9 @@ export default function FavoritosPage() {
 
         <TabsContent value="eventos" className="mt-0">
           <ScrollArea className="h-[calc(100vh-13rem)]">
-            {favoriteEvents.length > 0 ? (
+            {filteredEvents.length > 0 ? (
               <div className="grid gap-3">
-                {favoriteEvents.map((event) => (
+                {filteredEvents.map((event) => (
                   <EventCard key={event.id} event={event} showFavorite />
                 ))}
               </div>
