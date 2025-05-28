@@ -2,7 +2,7 @@
 import { InstallPWA } from "@/components/install-pwa"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 import { Bell, Calendar, Heart, Home, MapPin, Menu, Users } from "lucide-react"
@@ -111,6 +111,9 @@ export default function Navbar() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[250px] sm:w-[300px] pt-10">
+                  <SheetHeader>
+                    <SheetTitle>Menu</SheetTitle>
+                  </SheetHeader>
                   <nav className="flex flex-col gap-4">
                     {routes.map((route) => (
                       <Link
