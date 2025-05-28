@@ -1,13 +1,13 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Clock, MapPin } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import type { Event } from "@/lib/types"
-import { FavoriteButton } from "@/components/favorite-button"
-import { useState } from "react"
 import { EventDetailsDialog } from "@/components/event-details-dialog"
+import { FavoriteButton } from "@/components/favorite-button"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import type { Event } from "@/lib/types"
+import { Clock, MapPin } from "lucide-react"
+import { useState } from "react"
 
 interface EventCardProps {
   event: Event
