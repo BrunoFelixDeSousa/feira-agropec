@@ -1,13 +1,11 @@
 "use server"
 
-import prisma from "@/lib/prisma"
+import { createEvent as dbCreateEvent, deleteEvent as dbDeleteEvent, getAllEvents as dbGetAllEvents, getEventById as dbGetEventById, updateEvent as dbUpdateEvent } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 
 export async function getAllEvents() {
   try {
-    const events = await prisma.event.findMany({
-      orderBy: { date: "asc" },
-    })
+    const events = await dbGetAllEvents()
     return { success: true, data: events }
   } catch (error) {
     console.error("Erro ao buscar eventos:", error)
@@ -17,9 +15,7 @@ export async function getAllEvents() {
 
 export async function getEventById(id: string) {
   try {
-    const event = await prisma.event.findUnique({
-      where: { id },
-    })
+    const event = await dbGetEventById(id)
     return { success: true, data: event }
   } catch (error) {
     console.error(`Erro ao buscar evento ${id}:`, error)
@@ -29,9 +25,7 @@ export async function getEventById(id: string) {
 
 export async function createEvent(data: any) {
   try {
-    const event = await prisma.event.create({
-      data,
-    })
+    const event = await dbCreateEvent(data)
     revalidatePath("/programacao")
     revalidatePath("/admin/eventos")
     return { success: true, data: event }
@@ -43,10 +37,7 @@ export async function createEvent(data: any) {
 
 export async function updateEvent(id: string, data: any) {
   try {
-    const event = await prisma.event.update({
-      where: { id },
-      data,
-    })
+    const event = await dbUpdateEvent(id, data)
     revalidatePath("/programacao")
     revalidatePath("/admin/eventos")
     revalidatePath(`/admin/eventos/${id}`)
@@ -59,9 +50,7 @@ export async function updateEvent(id: string, data: any) {
 
 export async function deleteEvent(id: string) {
   try {
-    await prisma.event.delete({
-      where: { id },
-    })
+    await dbDeleteEvent(id)
     revalidatePath("/programacao")
     revalidatePath("/admin/eventos")
     return { success: true }
