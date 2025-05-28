@@ -1,32 +1,31 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
-import { Slider } from "@/components/ui/slider"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Search, Grid, List, MapIcon, SlidersHorizontal, X, Star, StarOff, ChevronDown, ChevronUp } from "lucide-react"
 import { ExhibitorCard } from "@/components/exhibitor-card"
-import { ExhibitorsMap } from "@/components/exhibitors-map"
-import { mockExhibitors } from "@/lib/mock-data"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   Sheet,
+  SheetClose,
   SheetContent,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  SheetFooter,
-  SheetClose,
 } from "@/components/ui/sheet"
-import { useFavoritesContext } from "@/lib/favorites"
-import { motion, AnimatePresence } from "framer-motion"
+import { Slider } from "@/components/ui/slider"
+import { Switch } from "@/components/ui/switch"
 import { useMobile } from "@/hooks/use-mobile"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { useFavoritesContext } from "@/lib/favorites"
+import { Exhibitor } from "@/lib/types"
+import { AnimatePresence, motion } from "framer-motion"
+import { ChevronDown, ChevronUp, Grid, List, Search, SlidersHorizontal, Star, StarOff, X } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export default function ExpositoresPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -39,26 +38,48 @@ export default function ExpositoresPage() {
   const [onlyFavorites, setOnlyFavorites] = useState(false)
   const [isFilterOpen, setIsFilterOpen] = useState(true)
   const { getFavoritesByType, isFavorite } = useFavoritesContext()
+  const [exhibitors, setExhibitors] = useState<Exhibitor[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const isMobile = useMobile()
 
+    // Buscar expositores do banco de dados quando o componente montar
+    useEffect(() => {
+      async function fetchExhibitors() {
+        try {
+          const res = await fetch("/api/exhibitors");
+          const { success, data: exhibitors } = await res.json();
+          if (exhibitors && success) {
+            setExhibitors(exhibitors);
+          }
+        } catch (error) {
+          console.error("Erro ao buscar expositores:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+
+      fetchExhibitors();
+    }, [])
+
   // Categorias únicas para o filtro
-  const uniqueCategories = Array.from(new Set(mockExhibitors.map((exhibitor) => exhibitor.category)))
+  const uniqueCategories = Array.from(new Set(exhibitors.map((exhibitor) => exhibitor.category)))
 
   // Filtrar e ordenar expositores
-  const filteredExhibitors = mockExhibitors
+  const filteredExhibitors = exhibitors
     .filter((exhibitor) => {
       // Filtro de busca
       const searchMatch =
-        exhibitor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        exhibitor.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        exhibitor.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (exhibitor.location?.stand && exhibitor.location.stand.toLowerCase().includes(searchTerm.toLowerCase()))
+        (exhibitor.name?.toLowerCase()).includes(searchTerm.toLowerCase()) ||
+        (exhibitor.description?.toLowerCase()).includes(searchTerm.toLowerCase()) ||
+        (exhibitor.category?.toLowerCase()).includes(searchTerm.toLowerCase()) ||
+        (exhibitor.location?.toLowerCase()).includes(searchTerm.toLowerCase())
 
       // Filtro de categoria
-      const categoryMatch = selectedCategory === "todos" || exhibitor.category === selectedCategory
+      const categoryMatch = selectedCategory === "todos" || (exhibitor.category) === selectedCategory
 
-      // Filtro de tamanho (simulado com base no ID para demonstração)
-      const standSize = (Number.parseInt(exhibitor.id) % 10) * 10 // Valor simulado entre 0 e 90
+      // Filtro de tamanho (corrigido para não bloquear tudo se id não for numérico)
+      let standSize = (Number.parseInt(exhibitor.id) % 10) * 10
+      if (Number.isNaN(standSize)) standSize = 50 // valor padrão se id não for numérico
       const sizeMatch = standSize >= standSizeFilter[0] && standSize <= standSizeFilter[1]
 
       // Filtro de favoritos
@@ -69,9 +90,13 @@ export default function ExpositoresPage() {
     .sort((a, b) => {
       // Ordenação
       if (sortBy === "name") {
-        return sortOrder === "asc" ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
+        return sortOrder === "asc"
+          ? (a.name).localeCompare(b.name)
+          : (b.name).localeCompare(a.name)
       } else {
-        return sortOrder === "asc" ? a.category.localeCompare(b.category) : b.category.localeCompare(a.category)
+        return sortOrder === "asc"
+          ? (a.category).localeCompare(b.category)
+          : (b.category).localeCompare(a.category)
       }
     })
 
@@ -410,40 +435,82 @@ export default function ExpositoresPage() {
               >
                 <List className="h-4 w-4" />
               </Button>
-              <Button
+              {/* <Button
                 variant={viewMode === "map" ? "default" : "ghost"}
                 size="sm"
                 className="rounded-none h-8 px-2"
                 onClick={() => setViewMode("map")}
               >
                 <MapIcon className="h-4 w-4" />
-              </Button>
+              </Button> */}
             </div>
           </div>
+          {isLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+          ) : (
+            <AnimatePresence mode="wait">
+              {viewMode === "grid" && (
+                <motion.div
+                  key="grid"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+                    {filteredExhibitors.length > 0 ? (
+                      filteredExhibitors.map((exhibitor) => (
+                        <motion.div
+                          key={exhibitor.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <ExhibitorCard key={exhibitor.id} exhibitor={exhibitor} showFavorite />
+                        </motion.div>
+                      ))
+                    ) : (
+                      <div className="col-span-full text-center p-6">
+                        <Card>
+                          <CardContent className="p-6 flex flex-col items-center">
+                            <StarOff className="h-12 w-12 text-muted-foreground mb-3" />
+                            <p className="text-muted-foreground">
+                              Nenhum expositor encontrado com os filtros selecionados.
+                            </p>
+                            <Button variant="outline" className="mt-4" onClick={clearFilters}>
+                              Limpar filtros
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
 
-          <AnimatePresence mode="wait">
-            {viewMode === "grid" && (
-              <motion.div
-                key="grid"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
-                  {filteredExhibitors.length > 0 ? (
-                    filteredExhibitors.map((exhibitor) => (
-                      <motion.div
-                        key={exhibitor.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <ExhibitorCard key={exhibitor.id} exhibitor={exhibitor} showFavorite />
-                      </motion.div>
-                    ))
-                  ) : (
-                    <div className="col-span-full text-center p-6">
+              {viewMode === "list" && (
+                <motion.div
+                  key="list"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="grid gap-3">
+                    {filteredExhibitors.length > 0 ? (
+                      filteredExhibitors.map((exhibitor, index) => (
+                        <motion.div
+                          key={exhibitor.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: index * 0.05 }}
+                        >
+                          <ExhibitorCard key={exhibitor.id} exhibitor={exhibitor} layout="list" showFavorite />
+                        </motion.div>
+                      ))
+                    ) : (
                       <Card>
                         <CardContent className="p-6 flex flex-col items-center">
                           <StarOff className="h-12 w-12 text-muted-foreground mb-3" />
@@ -455,65 +522,28 @@ export default function ExpositoresPage() {
                           </Button>
                         </CardContent>
                       </Card>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            )}
+                    )}
+                  </div>
+                </motion.div>
+              )}
 
-            {viewMode === "list" && (
-              <motion.div
-                key="list"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <div className="grid gap-3">
-                  {filteredExhibitors.length > 0 ? (
-                    filteredExhibitors.map((exhibitor, index) => (
-                      <motion.div
-                        key={exhibitor.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, delay: index * 0.05 }}
-                      >
-                        <ExhibitorCard key={exhibitor.id} exhibitor={exhibitor} layout="list" showFavorite />
-                      </motion.div>
-                    ))
-                  ) : (
-                    <Card>
-                      <CardContent className="p-6 flex flex-col items-center">
-                        <StarOff className="h-12 w-12 text-muted-foreground mb-3" />
-                        <p className="text-muted-foreground">
-                          Nenhum expositor encontrado com os filtros selecionados.
-                        </p>
-                        <Button variant="outline" className="mt-4" onClick={clearFilters}>
-                          Limpar filtros
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              </motion.div>
-            )}
-
-            {viewMode === "map" && (
-              <motion.div
-                key="map"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Card className="overflow-hidden">
-                  <CardContent className="p-0">
-                    <ExhibitorsMap exhibitors={filteredExhibitors} />
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              {/* {viewMode === "map" && (
+                <motion.div
+                  key="map"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Card className="overflow-hidden">
+                    <CardContent className="p-0">
+                      <ExhibitorsMap exhibitors={filteredExhibitors} />
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )} */}
+            </AnimatePresence>
+          )}
         </div>
       </div>
     </div>
