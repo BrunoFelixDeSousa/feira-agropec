@@ -1,6 +1,5 @@
 "use client"
 
-import { getAllEvents } from "@/app/api/events/actions"; // Importando a Server Action
 import { CalendarView } from "@/components/calendar-view";
 import { EventCard } from "@/components/event-card";
 import { Badge } from "@/components/ui/badge";
@@ -49,18 +48,19 @@ export default function ProgramacaoPage() {
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const {success, data: events} = await getAllEvents()
+        const res = await fetch("/api/events");
+        const { success, data: events } = await res.json();
         if (events && success) {
-          setEvents(events)
+          setEvents(events);
         }
       } catch (error) {
-        console.error("Erro ao buscar eventos:", error)
+        console.error("Erro ao buscar eventos:", error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     }
 
-    fetchEvents()
+    fetchEvents();
   }, [])
 
   // Datas únicas para o filtro
@@ -630,7 +630,7 @@ export default function ProgramacaoPage() {
                             <h2 className="text-lg font-bold">{date}</h2>
                           </div>
                           <div className={isMobile ? "grid gap-3" : "grid grid-cols-2 gap-3"}>
-                            {eventsByDate[date].map((event, index) => (
+                            {eventsByDate[date].map((event: Event, index: number) => (
                               <motion.div
                                 key={event.id}
                                 initial={{ opacity: 0, y: 20 }}
