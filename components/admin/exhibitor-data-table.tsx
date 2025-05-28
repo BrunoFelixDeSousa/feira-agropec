@@ -1,19 +1,19 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
 import {
   type ColumnDef,
+  type ColumnFiltersState,
   flexRender,
   getCoreRowModel,
-  useReactTable,
-  getPaginationRowModel,
-  type SortingState,
-  getSortedRowModel,
-  type ColumnFiltersState,
   getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  type SortingState,
+  useReactTable,
 } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal, Pencil, Trash } from "lucide-react"
+import Link from "next/link"
+import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -26,8 +26,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+
+import { mockExhibitors } from "@/lib/mock-data"
 import type { Exhibitor } from "@/lib/types"
-import { exhibitors } from "@/lib/mock-data"
 
 const columns: ColumnDef<Exhibitor>[] = [
   {
@@ -50,12 +51,12 @@ const columns: ColumnDef<Exhibitor>[] = [
   {
     accessorKey: "location.area",
     header: "Área",
-    cell: ({ row }) => <div>{row.original.location.area}</div>,
+    cell: ({ row }) => <div>{row.original.location}</div>,
   },
   {
     accessorKey: "location.stand",
     header: "Estande",
-    cell: ({ row }) => <div>{row.original.location.stand}</div>,
+    cell: ({ row }) => <div>{row.original.booth}</div>,
   },
   {
     id: "actions",
@@ -95,7 +96,7 @@ export function ExhibitorDataTable() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
   const table = useReactTable({
-    data: exhibitors,
+    data: mockExhibitors,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

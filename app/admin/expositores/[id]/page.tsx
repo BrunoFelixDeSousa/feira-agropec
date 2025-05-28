@@ -1,6 +1,6 @@
-import { notFound } from "next/navigation"
 import { ExhibitorForm } from "@/components/admin/exhibitor-form"
-import { exhibitors } from "@/lib/mock-data"
+import { mockExhibitors } from "@/lib/mock-data"
+import { notFound } from "next/navigation"
 
 export default function EditExhibitorPage({ params }: { params: { id: string } }) {
   // Se for "novo", retornamos um formulário vazio
@@ -14,7 +14,7 @@ export default function EditExhibitorPage({ params }: { params: { id: string } }
   }
 
   // Caso contrário, buscamos o expositor pelo ID
-  const exhibitor = exhibitors.find((e) => e.id === params.id)
+  const exhibitor = mockExhibitors.find((e) => e.id === params.id)
 
   if (!exhibitor) {
     notFound()

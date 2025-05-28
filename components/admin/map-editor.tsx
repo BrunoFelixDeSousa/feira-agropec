@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { toast } from "@/components/ui/use-toast"
-import { exhibitors } from "@/lib/mock-data"
+import { mockExhibitors } from "@/lib/mock-data"
+import { useState } from "react"
 
 export function MapEditor() {
   const [zoom, setZoom] = useState([100])
@@ -40,7 +40,7 @@ export function MapEditor() {
 
           {/* Aqui seria implementado o editor visual do mapa */}
           <div className="grid grid-cols-4 gap-2 absolute bottom-4 left-4 right-4 bg-background/80 p-2 rounded-md backdrop-blur">
-            {exhibitors.slice(0, 8).map((exhibitor) => (
+            {mockExhibitors.slice(0, 8).map((exhibitor) => (
               <div key={exhibitor.id} className="border rounded-md p-2 text-xs cursor-move hover:bg-accent" draggable>
                 {exhibitor.name}
               </div>
