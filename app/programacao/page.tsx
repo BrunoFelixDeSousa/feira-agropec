@@ -1,36 +1,36 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { EventCard } from "@/components/event-card"
-import { CalendarView } from "@/components/calendar-view"
-import { Search, Calendar, ListFilter, X, Clock, Star, StarOff, ChevronDown, ChevronUp } from "lucide-react"
-import { useFavoritesContext } from "@/lib/favorites"
-import { motion, AnimatePresence } from "framer-motion"
-import { useMobile } from "@/hooks/use-mobile"
+import { getAllEvents } from "@/app/api/events/actions"; // Importando a Server Action
+import { CalendarView } from "@/components/calendar-view";
+import { EventCard } from "@/components/event-card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  SheetFooter,
-  SheetClose,
-} from "@/components/ui/sheet"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { getAllEvents } from "@/app/api/events/actions" // Importando a Server Action
-import { mockEvents } from "@/lib/mock-data" // Temporariamente usando mock data até a conexão com o banco estar pronta
+} from "@/components/ui/sheet";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useMobile } from "@/hooks/use-mobile";
+import { useFavoritesContext } from "@/lib/favorites";
+import { Event } from "@/lib/types";
+import { AnimatePresence, motion } from "framer-motion";
+import { Calendar, ChevronDown, ChevronUp, Clock, ListFilter, Search, Star, StarOff, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function ProgramacaoPage() {
-  const [events, setEvents] = useState(mockEvents) // Começamos com os dados mockados
+  const [events, setEvents] = useState<Event[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState<string>("")
   const [selectedDate, setSelectedDate] = useState<string>("todos")
@@ -49,9 +49,9 @@ export default function ProgramacaoPage() {
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const result = await getAllEvents()
-        if (result.success) {
-          setEvents(result.data)
+        const {success, data: events} = await getAllEvents()
+        if (events && success) {
+          setEvents(events)
         }
       } catch (error) {
         console.error("Erro ao buscar eventos:", error)

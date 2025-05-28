@@ -1,21 +1,22 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { ChevronLeft, ChevronRight, CalendarIcon } from "lucide-react"
-import type { Event } from "@/lib/types"
 import { EventDetailsDialog } from "@/components/event-details-dialog"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import type { Event } from "@/lib/types"
+import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react"
+import { useState } from "react"
 
 interface CalendarViewProps {
   events: Event[]
 }
 
 export function CalendarView({ events }: CalendarViewProps) {
+  const today = new Date().getFullYear()
   const [currentMonth, setCurrentMonth] = useState(7) // Agosto (0-indexed seria 7, mas usamos 1-indexed para facilitar)
-  const [currentYear, setCurrentYear] = useState(2023)
+  const [currentYear, setCurrentYear] = useState(today)
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
