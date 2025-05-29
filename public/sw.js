@@ -1,7 +1,7 @@
 // Service Worker para PWA e notificações push
 
 // Cache de arquivos para funcionamento offline
-const CACHE_NAME = "agropec-v1"
+const CACHE_NAME = "agropec"
 const urlsToCache = ["/", "/mapa", "/programacao", "/expositores", "/notificacoes"]
 
 self.addEventListener("install", (event) => {
