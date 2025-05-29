@@ -77,8 +77,8 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
   },[])
 
   const filteredExhibitors = filter
-    ? mockExhibitors.filter((exhibitor) => exhibitor.location === filter)
-    : mockExhibitors
+    ? exhibitorData.filter((exhibitor) => exhibitor.location === filter)
+    : exhibitorData
 
   // Centralizar o mapa quando o componente é montado ou o filtro muda
   useEffect(() => {
@@ -269,7 +269,7 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
           </div>
 
           {/* Marcadores dos estandes */}
-          {exhibitorData.map((exhibitor) => (
+          {filteredExhibitors.map((exhibitor) => (
             <div
               key={exhibitor.id}
               className={`absolute ${getMarkerColor(exhibitor.category)} text-white rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:scale-110 transition-all shadow-lg`}
