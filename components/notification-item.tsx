@@ -1,10 +1,10 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Calendar, Clock, X } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
 import type { Notification } from "@/lib/types"
+import { Calendar, Clock, X } from "lucide-react"
 
 interface NotificationItemProps {
   notification: Notification
@@ -29,9 +29,9 @@ export function NotificationItem({ notification, onDismiss }: NotificationItemPr
           <div className="flex-1">
             <div className="flex items-center gap-1 mb-1">
               <h4 className="font-semibold text-sm">{notification.title}</h4>
-              {notification.type === "urgent" && <Badge className="bg-red-500 text-xs">Urgente</Badge>}
-              {notification.type === "schedule_change" && <Badge className="bg-yellow-500 text-xs">Alteração</Badge>}
-              {notification.type === "reminder" && <Badge className="text-xs">Lembrete</Badge>}
+              {notification.type === "URGENT" && <Badge className="bg-red-500 text-xs">Urgente</Badge>}
+              {notification.type === "SCHEDULE_CHANGE" && <Badge className="bg-yellow-500 text-xs">Alteração</Badge>}
+              {notification.type === "REMINDER" && <Badge className="text-xs">Lembrete</Badge>}
             </div>
             <p className="text-xs text-muted-foreground mb-1">{notification.message}</p>
             <div className="flex items-center text-xs text-muted-foreground">
