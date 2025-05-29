@@ -248,7 +248,7 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
               onMouseEnter={() => handleExhibitorHover(exhibitor.id, exhibitor.location.x, exhibitor.location.y)}
               onMouseLeave={() => setShowTooltip(null)}
             >
-              <span className="font-bold">{exhibitor.location.stand.split("-")[1]}</span>
+              <span className="font-bold">{exhibitor.location.split("-")[1]}</span>
             </div>
           ))}
 
