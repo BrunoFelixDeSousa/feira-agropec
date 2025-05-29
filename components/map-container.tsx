@@ -65,9 +65,7 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
   useEffect(()=>{
     const getApi = async()=>{
       const response = await getAllExhibitor()
-      console.log(response)
       if(response.success){
-        console.log(response.data)
         if (response.data !== undefined){
           setExhibitorData(response.data)
         }
