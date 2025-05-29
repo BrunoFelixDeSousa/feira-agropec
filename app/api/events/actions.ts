@@ -70,3 +70,5 @@ export async function deleteEvent(id: string) {
     return { success: false, error: "Falha ao excluir evento" }
   }
 }
+
+

@@ -8,14 +8,33 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { FavoriteButton } from "@/components/favorite-button"
+import { useEffect, useState } from "react"
+import { getExhibitorId } from "@/app/api/exhibitors/actions"
+import {Event, Exhibitor} from "../lib/types"
+import { getEventById } from "@/lib/db"
 
 interface ExhibitorInfoProps {
-  exhibitorId: string | null
+  exhibitorId: string
 }
 
 export function ExhibitorInfo({ exhibitorId }: ExhibitorInfoProps) {
-  const exhibitor = exhibitorId ? mockExhibitors.find((e) => e.id === exhibitorId) : null
 
+  const [events, setEvents] = useState<Event[]>([])
+  const [exhibitor, setExhibitor] = useState<Exhibitor | undefined>()
+  
+  // const exhibitor = exhibitorId ? exhibitors?.filter((e) => e.id === exhibitorId) : null
+
+  useEffect(()=>{
+    const getById = async () =>{
+      const response = await getExhibitorId(exhibitorId)
+      if(response.success){
+        if(response.data !== null && response.data !== undefined){
+          setExhibitor(response.data)
+        }
+      }
+    }
+    getById()
+  }, [])
   // Encontrar eventos relacionados a este expositor (simulado)
   const relatedEvents = exhibitorId
     ? mockEvents.filter((e, index) => index % 5 === Number(exhibitorId) % 5).slice(0, 2)
@@ -90,25 +109,25 @@ export function ExhibitorInfo({ exhibitorId }: ExhibitorInfoProps) {
               <div className="space-y-3">
                 <h3 className="text-sm font-medium">Contato</h3>
 
-                {exhibitor.contact?.phone && (
+                {exhibitor.phone && (
                   <div className="flex items-center gap-3">
                     <div className="bg-muted p-2 rounded-full">
                       <Phone className="h-4 w-4 text-muted-foreground" />
                     </div>
                     <div>
-                      <p className="text-sm">{exhibitor.contact.phone}</p>
+                      <p className="text-sm">{exhibitor.phone}</p>
                       <p className="text-xs text-muted-foreground">Telefone</p>
                     </div>
                   </div>
                 )}
 
-                {exhibitor.contact?.email && (
+                {exhibitor.email && (
                   <div className="flex items-center gap-3">
                     <div className="bg-muted p-2 rounded-full">
                       <Mail className="h-4 w-4 text-muted-foreground" />
                     </div>
                     <div>
-                      <p className="text-sm">{exhibitor.contact.email}</p>
+                      <p className="text-sm">{exhibitor.email}</p>
                       <p className="text-xs text-muted-foreground">Email</p>
                     </div>
                   </div>
@@ -144,7 +163,7 @@ export function ExhibitorInfo({ exhibitorId }: ExhibitorInfoProps) {
                     <MapPin className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{exhibitor.location.area}</p>
+                    <p className="text-sm font-medium">{exhibitor.location}</p>
                     <p className="text-xs text-muted-foreground">Área</p>
                   </div>
                 </div>
@@ -154,7 +173,7 @@ export function ExhibitorInfo({ exhibitorId }: ExhibitorInfoProps) {
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{exhibitor.location.stand}</p>
+                    <p className="text-sm font-medium">{exhibitor.location}</p>
                     <p className="text-xs text-muted-foreground">Estande</p>
                   </div>
                 </div>

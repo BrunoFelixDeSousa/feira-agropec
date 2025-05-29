@@ -6,7 +6,9 @@ import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { mockExhibitors } from "@/lib/mock-data"
 import { Navigation } from "lucide-react"
-import { getAllEvents } from "@/app/api/events/actions"
+import { Exhibitor } from "@prisma/client"
+import { getAllExhibitors } from "@/lib/db"
+import { getAllExhibitor } from "@/app/api/exhibitors/actions"
 
 interface MapContainerProps {
   zoomLevel: number
@@ -27,24 +29,26 @@ const categoryColors: Record<string, string> = {
   Energia: "bg-orange-600",
 }
 
+type mapPosition = {
+  x: number
+  y: number
+}
+
 interface StandsProps {
   id: string
-        name: string
-        description: string
-        category: string
-        location: string
-        booth: string
-        logo: string | null
-        website: string | null
-        phone: string | null
-        email: string | null
-        featured: boolean
-        mapPosition: {
-          x: number
-          y: number
-        }
-        createdAt: Date
-        updatedAt: Date
+  name: string
+  description: string
+  category: string
+  location: string
+  booth: string
+  logo: string | null
+  website: string | null
+  phone: string | null
+  email: string | null
+  featured: boolean
+  mapPosition: mapPosition | null
+  createdAt: Date
+  updatedAt: Date
 }
 
 export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocation }: MapContainerProps) {
@@ -56,18 +60,21 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
   const [mapDimensions, setMapDimensions] = useState({ width: 1000, height: 800 })
   const [showTooltip, setShowTooltip] = useState<{ id: string; x: number; y: number } | null>(null)
   const [mapLoaded, setMapLoaded] = useState(false)
-  const [standData, setStandData]= useState<StandsProps[]>([])
+  const [exhibitorData, setExhibitorData]= useState<Exhibitor[]>([])
   // Filtrar expositores com base no filtro selecionado
   useEffect(()=>{
     const getApi = async()=>{
-      const response = await getAllEvents()
+      const response = await getAllExhibitor()
+      console.log(response)
       if(response.success){
-        console.log(response)
-        // setStandData(response.data)
+        console.log(response.data)
+        if (response.data !== undefined){
+          setExhibitorData(response.data)
+        }
       }
     }
     getApi()
-  },[location])
+  },[])
 
   const filteredExhibitors = filter
     ? mockExhibitors.filter((exhibitor) => exhibitor.location === filter)
@@ -262,7 +269,7 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
           </div>
 
           {/* Marcadores dos estandes */}
-          {filteredExhibitors.map((exhibitor) => (
+          {exhibitorData.map((exhibitor) => (
             <div
               key={exhibitor.id}
               className={`absolute ${getMarkerColor(exhibitor.category)} text-white rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:scale-110 transition-all shadow-lg`}
@@ -301,10 +308,10 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
               }}
             >
               <div className="text-sm font-bold truncate">
-                {mockExhibitors.find((e) => e.id === showTooltip.id)?.name}
+                {exhibitorData.find((e) => e.id === showTooltip.id)?.name}
               </div>
               <div className="text-xs text-muted-foreground">
-                {mockExhibitors.find((e) => e.id === showTooltip.id)?.category}
+                {exhibitorData.find((e) => e.id === showTooltip.id)?.category}
               </div>
             </div>
           )}
