@@ -90,25 +90,25 @@ export function ExhibitorInfo({ exhibitorId }: ExhibitorInfoProps) {
               <div className="space-y-3">
                 <h3 className="text-sm font-medium">Contato</h3>
 
-                {exhibitor.contact?.phone && (
+                {exhibitor.phone && (
                   <div className="flex items-center gap-3">
                     <div className="bg-muted p-2 rounded-full">
                       <Phone className="h-4 w-4 text-muted-foreground" />
                     </div>
                     <div>
-                      <p className="text-sm">{exhibitor.contact.phone}</p>
+                      <p className="text-sm">{exhibitor.phone}</p>
                       <p className="text-xs text-muted-foreground">Telefone</p>
                     </div>
                   </div>
                 )}
 
-                {exhibitor.contact?.email && (
+                {exhibitor.email && (
                   <div className="flex items-center gap-3">
                     <div className="bg-muted p-2 rounded-full">
                       <Mail className="h-4 w-4 text-muted-foreground" />
                     </div>
                     <div>
-                      <p className="text-sm">{exhibitor.contact.email}</p>
+                      <p className="text-sm">{exhibitor.email}</p>
                       <p className="text-xs text-muted-foreground">Email</p>
                     </div>
                   </div>
@@ -144,7 +144,7 @@ export function ExhibitorInfo({ exhibitorId }: ExhibitorInfoProps) {
                     <MapPin className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{exhibitor.location.area}</p>
+                    <p className="text-sm font-medium">{exhibitor.location}</p>
                     <p className="text-xs text-muted-foreground">Área</p>
                   </div>
                 </div>
@@ -154,7 +154,7 @@ export function ExhibitorInfo({ exhibitorId }: ExhibitorInfoProps) {
                     <Info className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{exhibitor.location.stand}</p>
+                    <p className="text-sm font-medium">{exhibitor.location}</p>
                     <p className="text-xs text-muted-foreground">Estande</p>
                   </div>
                 </div>

@@ -38,7 +38,7 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
 
   // Filtrar expositores com base no filtro selecionado
   const filteredExhibitors = filter
-    ? mockExhibitors.filter((exhibitor) => exhibitor.location.area === filter)
+    ? mockExhibitors.filter((exhibitor) => exhibitor.location === filter)
     : mockExhibitors
 
   // Centralizar o mapa quando o componente é montado ou o filtro muda
