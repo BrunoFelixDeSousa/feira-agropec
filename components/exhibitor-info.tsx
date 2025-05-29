@@ -11,7 +11,7 @@ import { FavoriteButton } from "@/components/favorite-button"
 import { useEffect, useState } from "react"
 import { getExhibitorId } from "@/app/api/exhibitors/actions"
 import {Event, Exhibitor} from "../lib/types"
-import { getEventById } from "@/lib/db"
+
 
 interface ExhibitorInfoProps {
   exhibitorId: string
