@@ -209,7 +209,7 @@ export function ExhibitorsMap({ exhibitors }: ExhibitorsMapProps) {
         >
           <div className="relative" style={{ width: mapDimensions.width, height: mapDimensions.height }}>
             <Image
-              src="/placeholder.svg?height=800&width=1000"
+              src="/mapa-oficial.JPG?height=800&width=1000"
               alt="Mapa da Feira"
               width={mapDimensions.width}
               height={mapDimensions.height}
