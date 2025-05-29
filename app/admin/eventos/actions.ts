@@ -1,23 +1,20 @@
 "use server"
 
-import { createEvent, updateEvent, deleteEvent } from "@/lib/db"
+import { createEvent, deleteEvent, updateEvent } from "@/lib/db"
+import { paths } from "@/lib/paths"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
 export async function createEventAction(formData: FormData) {
   const title = formData.get("title") as string
   const description = formData.get("description") as string
-  const date = new Date(formData.get("date") as string)
+  const date = new Date(formData.get("date") as string).toISOString().split("T")[0] // 'YYYY-MM-DD'
   const startTime = formData.get("startTime") as string
-  const endTime = (formData.get("endTime") as string) || undefined
+  const endTime = (formData.get("endTime") as string) || null
   const location = formData.get("location") as string
   const category = formData.get("category") as string
   const featured = formData.get("featured") === "on"
-  const image = (formData.get("image") as string) || undefined
-  const capacity = (formData.get("capacity") as string) || undefined
-  const speaker = (formData.get("speaker") as string) || undefined
-  const ticketRequired = formData.get("ticketRequired") === "on"
-  const ticketPrice = (formData.get("ticketPrice") as string) || undefined
+  const image = (formData.get("image") as string) || null
   const tagsString = formData.get("tags") as string
   const tags = tagsString ? tagsString.split(",").map((tag) => tag.trim()) : []
 
@@ -25,38 +22,30 @@ export async function createEventAction(formData: FormData) {
     title,
     description,
     date,
-    startTime,
+    time: startTime,
     endTime,
     location,
-    category,
+    type: category,
     featured,
     image,
-    capacity,
-    speaker,
-    ticketRequired,
-    ticketPrice,
     tags,
   })
 
-  revalidatePath("/admin/eventos")
+  revalidatePath(paths.admin.eventos)
   revalidatePath("/programacao")
-  redirect("/admin/eventos")
+  redirect(paths.admin.eventos)
 }
 
 export async function updateEventAction(id: string, formData: FormData) {
   const title = formData.get("title") as string
   const description = formData.get("description") as string
-  const date = new Date(formData.get("date") as string)
+  const date = new Date(formData.get("date") as string).toISOString().split("T")[0]
   const startTime = formData.get("startTime") as string
-  const endTime = (formData.get("endTime") as string) || undefined
+  const endTime = (formData.get("endTime") as string) || null
   const location = formData.get("location") as string
   const category = formData.get("category") as string
   const featured = formData.get("featured") === "on"
-  const image = (formData.get("image") as string) || undefined
-  const capacity = (formData.get("capacity") as string) || undefined
-  const speaker = (formData.get("speaker") as string) || undefined
-  const ticketRequired = formData.get("ticketRequired") === "on"
-  const ticketPrice = (formData.get("ticketPrice") as string) || undefined
+  const image = (formData.get("image") as string) || null
   const tagsString = formData.get("tags") as string
   const tags = tagsString ? tagsString.split(",").map((tag) => tag.trim()) : []
 
@@ -64,28 +53,24 @@ export async function updateEventAction(id: string, formData: FormData) {
     title,
     description,
     date,
-    startTime,
+    time: startTime,
     endTime,
     location,
-    category,
+    type: category,
     featured,
     image,
-    capacity,
-    speaker,
-    ticketRequired,
-    ticketPrice,
     tags,
   })
 
-  revalidatePath("/admin/eventos")
+  revalidatePath(paths.admin.eventos)
   revalidatePath("/programacao")
-  revalidatePath(`/admin/eventos/${id}`)
-  redirect("/admin/eventos")
+  revalidatePath(`${paths.admin.eventos}/${id}`)
+  redirect(paths.admin.eventos)
 }
 
 export async function deleteEventAction(id: string) {
   await deleteEvent(id)
 
-  revalidatePath("/admin/eventos")
+  revalidatePath(paths.admin.eventos)
   revalidatePath("/programacao")
 }

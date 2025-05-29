@@ -3,6 +3,8 @@
 // Simulação de um sistema de autenticação
 // Em produção, use um sistema real como NextAuth.js
 
+import { paths } from "@/lib/paths"
+
 type User = {
   id: string
   name: string
@@ -58,7 +60,7 @@ export function login(email: string, password: string): boolean {
 
 export function logout(): void {
   localStorage.removeItem("admin-session")
-  window.location.href = "/admin/login"
+  window.location.href = paths.admin.login
 }
 
 export function getSession(): Session | null {

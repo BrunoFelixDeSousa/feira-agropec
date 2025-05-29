@@ -2,17 +2,17 @@
 
 import type React from "react"
 
-import { useEffect, useState } from "react"
+import { LogOut } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { useRouter, usePathname } from "next/navigation"
-import { LogOut } from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
 import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { SidebarProvider } from "@/components/ui/sidebar"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { getSession, isAuthenticated, logout } from "@/lib/auth"
+import { paths } from "@/lib/paths"
 
 export default function AdminLayout({
   children,
@@ -26,7 +26,7 @@ export default function AdminLayout({
 
   useEffect(() => {
     // Não redirecionar se já estiver na página de login
-    if (pathname === "/admin/login") {
+    if (pathname === paths.admin.login) {
       setIsLoading(false)
       return
     }
@@ -36,14 +36,14 @@ export default function AdminLayout({
     setSession(userSession)
 
     if (!isAuthenticated()) {
-      router.push("/admin/login")
+      router.push(paths.admin.login)
     }
 
     setIsLoading(false)
   }, [router, pathname])
 
   // Se estiver na página de login, renderizar diretamente o conteúdo
-  if (pathname === "/admin/login") {
+  if (pathname === paths.admin.login) {
     return children
   }
 
@@ -60,7 +60,7 @@ export default function AdminLayout({
   }
 
   // Se não estiver autenticado e não estiver na página de login, mostrar tela de carregamento
-  if (!session && pathname !== "/admin/login") {
+  if (!session && pathname !== paths.admin.login) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -75,6 +75,8 @@ export default function AdminLayout({
     <SidebarProvider>
       <div className="flex min-h-screen flex-col">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:px-6">
+          {/* Botão de menu para mobile */}
+          <SidebarTrigger className="md:hidden" />
           <div className="flex items-center gap-3">
             <Link href="/admin" className="flex items-center gap-2">
               <Image src="/placeholder.svg?height=32&width=32" alt="Logo" width={32} height={32} className="h-8 w-8" />
@@ -97,12 +99,12 @@ export default function AdminLayout({
             )}
           </div>
         </header>
-        <div className="flex-1 items-start md:grid md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+        <div className="flex-1 flex">
           <AdminSidebar />
           <main className="flex w-full flex-col overflow-hidden">
-            <ScrollArea className="h-[calc(100vh-3.5rem)]">
+            {/* <ScrollArea className="h-[calc(100vh-3.5rem)]"> */}
               <div className="flex-1 space-y-4 p-5 pt-6">{children}</div>
-            </ScrollArea>
+            {/* </ScrollArea> */}
           </main>
         </div>
       </div>

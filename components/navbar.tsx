@@ -3,6 +3,7 @@ import { InstallPWA } from "@/components/install-pwa"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { paths } from "@/lib/paths"
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 import { Bell, Calendar, Heart, Home, MapPin, Menu, Users } from "lucide-react"
@@ -43,12 +44,12 @@ export default function Navbar() {
   }, [])
 
   const routes = [
-    { href: "/", label: "Início", icon: Home },
-    { href: "/mapa", label: "Mapa", icon: MapPin },
-    { href: "/programacao", label: "Agenda", icon: Calendar },
-    { href: "/expositores", label: "Expositores", icon: Users },
-    { href: "/favoritos", label: "Favoritos", icon: Heart },
-    { href: "/notificacoes", label: "Alertas", icon: Bell },
+    { href: paths.site.home, label: "Início", icon: Home },
+    { href: paths.site.mapa, label: "Mapa", icon: MapPin },
+    { href: paths.site.programacao, label: "Agenda", icon: Calendar },
+    { href: paths.site.expositores, label: "Expositores", icon: Users },
+    { href: paths.site.favoritos, label: "Favoritos", icon: Heart },
+    { href: paths.site.notificacoes, label: "Alertas", icon: Bell },
   ]
 
   return (

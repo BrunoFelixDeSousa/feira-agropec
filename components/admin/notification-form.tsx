@@ -1,39 +1,37 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
+import { CalendarIcon } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/hooks/use-toast"
-import { cn } from "@/lib/utils"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
+import { paths } from "@/lib/paths"
 import type { Notification } from "@/lib/types"
+import { cn } from "@/lib/utils"
 
 const formSchema = z.object({
   title: z.string().min(3, {
     message: "O título deve ter pelo menos 3 caracteres",
   }),
-  content: z.string().min(10, {
+  message: z.string().min(10, {
     message: "O conteúdo deve ter pelo menos 10 caracteres",
   }),
-  date: z.date({
+  timestamp: z.date({
     required_error: "Selecione uma data para a notificação",
   }),
-  type: z.enum(["info", "alert", "event", "promo"]),
-  scheduled: z.boolean().default(false),
-  urgent: z.boolean().default(false),
+  type: z.enum(["URGENT", "SCHEDULE_CHANGE", "REMINDER", "INFO", "WARNING", "ALERT"]),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -50,11 +48,9 @@ export function NotificationForm({ defaultValues }: NotificationFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: defaultValues?.title || "",
-      content: defaultValues?.content || "",
-      date: defaultValues?.date ? new Date(defaultValues.date) : new Date(),
-      type: (defaultValues?.type as any) || "info",
-      scheduled: defaultValues?.scheduled || false,
-      urgent: defaultValues?.urgent || false,
+      message: defaultValues?.message || "",
+      timestamp: defaultValues?.timestamp ? new Date(defaultValues.timestamp) : new Date(),
+      type: (defaultValues?.type as any) || "INFO",
     },
   })
 
@@ -71,7 +67,7 @@ export function NotificationForm({ defaultValues }: NotificationFormProps) {
         description: `A notificação "${values.title}" foi salva.`,
       })
 
-      router.push("/admin/notificacoes")
+      router.push(paths.admin.notificacoes)
     } catch (error) {
       console.error(error)
       toast({
@@ -129,7 +125,7 @@ export function NotificationForm({ defaultValues }: NotificationFormProps) {
 
         <FormField
           control={form.control}
-          name="content"
+          name="message"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Conteúdo</FormLabel>
@@ -143,7 +139,7 @@ export function NotificationForm({ defaultValues }: NotificationFormProps) {
 
         <FormField
           control={form.control}
-          name="date"
+          name="timestamp"
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Data</FormLabel>
@@ -169,47 +165,11 @@ export function NotificationForm({ defaultValues }: NotificationFormProps) {
           )}
         />
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <FormField
-            control={form.control}
-            name="scheduled"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                <FormControl>
-                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>Agendada</FormLabel>
-                  <FormDescription>
-                    Marque esta opção para agendar o envio da notificação para a data selecionada
-                  </FormDescription>
-                </div>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="urgent"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                <FormControl>
-                  <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>Urgente</FormLabel>
-                  <FormDescription>Marque esta opção para destacar a notificação como urgente</FormDescription>
-                </div>
-              </FormItem>
-            )}
-          />
-        </div>
-
         <div className="flex justify-end space-x-4">
           <Button
             type="button"
             variant="outline"
-            onClick={() => router.push("/admin/notificacoes")}
+            onClick={() => router.push(paths.admin.notificacoes)}
             disabled={isSubmitting}
           >
             Cancelar

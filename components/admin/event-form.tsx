@@ -2,29 +2,30 @@
 
 import type React from "react"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { CalendarIcon, Clock, Upload, Info, MapPin, Tag, Star, X } from "lucide-react"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
+import { CalendarIcon, Clock, Info, MapPin, Star, Tag, Upload, X } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
+import { createEventAction, updateEventAction } from "@/app/admin/eventos/actions"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
+import { Card, CardContent } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Textarea } from "@/components/ui/textarea"
-import { cn } from "@/lib/utils"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { createEventAction, updateEventAction } from "@/app/admin/eventos/actions"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
+import { paths } from "@/lib/paths"
+import { cn } from "@/lib/utils"
 
 const formSchema = z.object({
   title: z.string().min(3, {
@@ -36,7 +37,7 @@ const formSchema = z.object({
   date: z.date({
     required_error: "Selecione uma data para o evento",
   }),
-  startTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
+  time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
     message: "Formato de hora inválido (HH:MM)",
   }),
   endTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
@@ -45,16 +46,12 @@ const formSchema = z.object({
   location: z.string().min(3, {
     message: "O local deve ter pelo menos 3 caracteres",
   }),
-  category: z.string({
+  type: z.string({
     required_error: "Selecione uma categoria",
   }),
-  featured: z.boolean().default(false),
+  featured: z.boolean(),
   image: z.string().optional(),
-  capacity: z.string().optional(),
-  speaker: z.string().optional(),
-  ticketRequired: z.boolean().default(false),
-  ticketPrice: z.string().optional(),
-  tags: z.array(z.string()).default([]),
+  tags: z.array(z.string()),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -73,20 +70,16 @@ export function EventForm({ event }: EventFormProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: event?.title || "",
-      description: event?.description || "",
+      title: event?.title ?? "",
+      description: event?.description ?? "",
       date: event?.date ? new Date(event.date) : new Date(),
-      startTime: event?.startTime || "09:00",
-      endTime: event?.endTime || "10:00",
-      location: event?.location || "",
-      category: event?.category || "palestra",
-      featured: event?.featured || false,
-      image: event?.image || "",
-      capacity: event?.capacity || "",
-      speaker: event?.speaker || "",
-      ticketRequired: event?.ticketRequired || false,
-      ticketPrice: event?.ticketPrice || "",
-      tags: event?.tags || [],
+      time: event?.time ?? "09:00",
+      endTime: event?.endTime ?? "10:00",
+      location: event?.location ?? "",
+      type: event?.type ?? "palestra",
+      featured: event?.featured ?? false,
+      image: event?.image ?? "",
+      tags: event?.tags ?? [],
     },
   })
 
@@ -111,12 +104,11 @@ export function EventForm({ event }: EventFormProps) {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsSubmitting(true)
-
     const formData = new FormData()
     Object.entries(data).forEach(([key, value]) => {
-      if (key === "tags") {
+      if (key === "tags" && Array.isArray(value)) {
         formData.append(key, value.join(","))
-      } else if (key === "date") {
+      } else if (key === "date" && value instanceof Date) {
         formData.append(key, value.toISOString())
       } else if (typeof value === "boolean") {
         if (value) formData.append(key, "on")
@@ -124,7 +116,6 @@ export function EventForm({ event }: EventFormProps) {
         formData.append(key, String(value))
       }
     })
-
     try {
       if (event?.id) {
         await updateEventAction(event.id, formData)
@@ -187,7 +178,7 @@ export function EventForm({ event }: EventFormProps) {
 
                 <FormField
                   control={form.control}
-                  name="category"
+                  name="type"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Categoria</FormLabel>
@@ -245,7 +236,7 @@ export function EventForm({ event }: EventFormProps) {
                               )}
                               onClick={(e) => {
                                 // Prevenir propagação do evento para evitar submissão
-                                e.stopPropagation()
+                                if (typeof e.stopPropagation === "function") e.stopPropagation()
                               }}
                             >
                               {field.value ? (
@@ -267,7 +258,7 @@ export function EventForm({ event }: EventFormProps) {
                             initialFocus
                             onDayClick={(day, e) => {
                               // Prevenir propagação do evento para evitar submissão
-                              e.stopPropagation()
+                              if (e && typeof (e as any).stopPropagation === "function") (e as any).stopPropagation();
                             }}
                           />
                         </PopoverContent>
@@ -280,7 +271,7 @@ export function EventForm({ event }: EventFormProps) {
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="startTime"
+                    name="time"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Hora de Início</FormLabel>
@@ -333,75 +324,6 @@ export function EventForm({ event }: EventFormProps) {
             </TabsContent>
 
             <TabsContent value="detalhes" className="space-y-6">
-              <div className="grid gap-6 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="speaker"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Palestrante/Apresentador</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Nome do palestrante ou apresentador" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Informe o nome do palestrante, artista ou apresentador principal
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="capacity"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Capacidade</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Ex: 100 pessoas" {...field} />
-                      </FormControl>
-                      <FormDescription>Capacidade máxima de pessoas para o evento</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid gap-6 md:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="ticketRequired"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                      <FormControl>
-                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>Ingresso Necessário</FormLabel>
-                        <FormDescription>Marque esta opção se o evento requer ingresso</FormDescription>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-
-                {watchedValues.ticketRequired && (
-                  <FormField
-                    control={form.control}
-                    name="ticketPrice"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Preço do Ingresso</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Ex: R$ 50,00" {...field} />
-                        </FormControl>
-                        <FormDescription>Informe o preço do ingresso ou "Gratuito"</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
-              </div>
-
               <FormField
                 control={form.control}
                 name="tags"
@@ -441,7 +363,6 @@ export function EventForm({ event }: EventFormProps) {
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="featured"
@@ -519,15 +440,15 @@ export function EventForm({ event }: EventFormProps) {
                         </Badge>
                         <Badge variant="outline">
                           <Clock className="mr-1 h-3 w-3" />
-                          {watchedValues.startTime || "00:00"} - {watchedValues.endTime || "00:00"}
+                          {watchedValues.time || "00:00"} - {watchedValues.endTime || "00:00"}
                         </Badge>
                         <Badge variant="outline">
                           <MapPin className="mr-1 h-3 w-3" />
                           {watchedValues.location || "Local não definido"}
                         </Badge>
-                        {watchedValues.category && (
+                        {watchedValues.type && (
                           <Badge>
-                            {watchedValues.category.charAt(0).toUpperCase() + watchedValues.category.slice(1)}
+                            {watchedValues.type.charAt(0).toUpperCase() + watchedValues.type.slice(1)}
                           </Badge>
                         )}
                         {watchedValues.featured && (
@@ -561,34 +482,6 @@ export function EventForm({ event }: EventFormProps) {
                       </p>
                     </div>
 
-                    {(watchedValues.speaker || watchedValues.capacity || watchedValues.ticketRequired) && (
-                      <>
-                        <Separator />
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          {watchedValues.speaker && (
-                            <div>
-                              <h4 className="text-sm font-medium">Apresentador</h4>
-                              <p className="text-sm text-muted-foreground">{watchedValues.speaker}</p>
-                            </div>
-                          )}
-                          {watchedValues.capacity && (
-                            <div>
-                              <h4 className="text-sm font-medium">Capacidade</h4>
-                              <p className="text-sm text-muted-foreground">{watchedValues.capacity}</p>
-                            </div>
-                          )}
-                          {watchedValues.ticketRequired && (
-                            <div>
-                              <h4 className="text-sm font-medium">Ingresso</h4>
-                              <p className="text-sm text-muted-foreground">
-                                {watchedValues.ticketPrice || "Preço não informado"}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </>
-                    )}
-
                     {watchedValues.tags.length > 0 && (
                       <>
                         <Separator />
@@ -613,7 +506,7 @@ export function EventForm({ event }: EventFormProps) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push("/admin/eventos")}
+                onClick={() => router.push(paths.admin.eventos)}
                 disabled={isSubmitting}
               >
                 Cancelar

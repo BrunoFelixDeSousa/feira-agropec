@@ -1,8 +1,8 @@
 "use client"
 
+import { Bell, CalendarDays, Home, ImageIcon, LayoutDashboard, Map, Settings, Users } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Users, CalendarDays, Bell, Settings, Map, Home, ImageIcon } from "lucide-react"
 
 import {
   Sidebar,
@@ -15,6 +15,7 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { paths } from "@/lib/paths"
 
 export function AdminSidebar() {
   const pathname = usePathname()
@@ -31,56 +32,56 @@ export function AdminSidebar() {
       <SidebarContent>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive("/admin")}>
-              <Link href="/admin">
+            <SidebarMenuButton asChild isActive={isActive(paths.admin.root)}>
+              <Link href={paths.admin.root}>
                 <LayoutDashboard className="h-4 w-4" />
                 <span>Dashboard</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive("/admin/expositores")}>
-              <Link href="/admin/expositores">
+            <SidebarMenuButton asChild isActive={isActive(paths.admin.expositores)}>
+              <Link href={paths.admin.expositores}>
                 <Users className="h-4 w-4" />
                 <span>Expositores</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive("/admin/eventos")}>
-              <Link href="/admin/eventos">
+            <SidebarMenuButton asChild isActive={isActive(paths.admin.eventos)}>
+              <Link href={paths.admin.eventos}>
                 <CalendarDays className="h-4 w-4" />
                 <span>Eventos</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive("/admin/notificacoes")}>
-              <Link href="/admin/notificacoes">
+            <SidebarMenuButton asChild isActive={isActive(paths.admin.notificacoes)}>
+              <Link href={paths.admin.notificacoes}>
                 <Bell className="h-4 w-4" />
                 <span>Notificações</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive("/admin/mapa")}>
-              <Link href="/admin/mapa">
+            <SidebarMenuButton asChild isActive={isActive(paths.admin.mapa)}>
+              <Link href={paths.admin.mapa}>
                 <Map className="h-4 w-4" />
                 <span>Mapa</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive("/admin/carousel")}>
-              <Link href="/admin/carousel">
+            <SidebarMenuButton asChild isActive={isActive(paths.admin.carousel)}>
+              <Link href={paths.admin.carousel}>
                 <ImageIcon className="h-4 w-4" />
                 <span>Carousel</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive("/admin/configuracoes")}>
-              <Link href="/admin/configuracoes">
+            <SidebarMenuButton asChild isActive={isActive(paths.admin.configuracoes)}>
+              <Link href={paths.admin.configuracoes}>
                 <Settings className="h-4 w-4" />
                 <span>Configurações</span>
               </Link>
