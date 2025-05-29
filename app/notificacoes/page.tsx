@@ -1,17 +1,17 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { BellOff } from "lucide-react"
 import { NotificationItem } from "@/components/notification-item"
-import { mockNotifications } from "@/lib/mock-data"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import { subscribeUser, unsubscribeUser } from "@/lib/notifications"
+import type { Notification } from "@/lib/types"
+import { BellOff } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export default function NotificacoesPage() {
-  const [notifications, setNotifications] = useState(mockNotifications)
+  const [notifications, setNotifications] = useState<Notification[]>([])
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isSupported, setIsSupported] = useState(false)
   const [permission, setPermission] = useState<NotificationPermission | null>(null)
@@ -29,6 +29,21 @@ export default function NotificacoesPage() {
     }
 
     checkNotificationSupport()
+  }, [])
+
+  useEffect(() => {
+    async function fetchNotifications() {
+      try {
+        const res = await fetch("/api/notifications")
+        const { success, data } = await res.json()
+        if (success && Array.isArray(data)) {
+          setNotifications(data)
+        }
+      } catch (error) {
+        console.error("Erro ao buscar notificações:", error)
+      }
+    }
+    fetchNotifications()
   }, [])
 
   const handleSubscriptionToggle = async () => {

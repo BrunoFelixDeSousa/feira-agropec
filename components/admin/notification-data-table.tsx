@@ -1,23 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { AlertCircle, Calendar, Edit, Info, MoreHorizontal, Tag, Trash2 } from "lucide-react"
 import Link from "next/link"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
-import { MoreHorizontal, Edit, Trash2, Send, AlertCircle, Info, Calendar, Tag } from "lucide-react"
+import { useEffect, useState } from "react"
 
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { toast } from "@/hooks/use-toast"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,65 +14,47 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-
-// Dados de exemplo para notificações
-const mockNotifications = [
-  {
-    id: "1",
-    title: "Bem-vindo à Feira Agropecuária",
-    content: "Estamos felizes em recebê-lo na maior feira agropecuária da região!",
-    date: new Date(2023, 5, 15),
-    type: "info",
-    status: "sent",
-    scheduled: false,
-    urgent: false,
-  },
-  {
-    id: "2",
-    title: "Alteração na programação",
-    content: "O show de hoje foi adiado para amanhã devido às condições climáticas.",
-    date: new Date(2023, 5, 16),
-    type: "alert",
-    status: "sent",
-    scheduled: false,
-    urgent: true,
-  },
-  {
-    id: "3",
-    title: "Novo expositor confirmado",
-    content: "Temos o prazer de anunciar que a empresa XYZ estará presente na feira.",
-    date: new Date(2023, 5, 17),
-    type: "info",
-    status: "draft",
-    scheduled: true,
-    urgent: false,
-  },
-  {
-    id: "4",
-    title: "Promoção especial",
-    content: "Aproveite descontos especiais nos produtos da feira hoje!",
-    date: new Date(2023, 5, 18),
-    type: "promo",
-    status: "draft",
-    scheduled: true,
-    urgent: false,
-  },
-  {
-    id: "5",
-    title: "Evento especial",
-    content: "Não perca o leilão de gado que acontecerá hoje às 15h.",
-    date: new Date(2023, 5, 19),
-    type: "event",
-    status: "draft",
-    scheduled: false,
-    urgent: true,
-  },
-]
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { toast } from "@/hooks/use-toast"
+import type { Notification } from "@/lib/types"
 
 export function NotificationDataTable() {
-  const [notifications, setNotifications] = useState(mockNotifications)
+  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isAlertOpen, setIsAlertOpen] = useState(false)
+
+  useEffect(() => {
+    async function fetchNotifications() {
+      setLoading(true)
+      setError(null)
+      try {
+        const res = await fetch("/api/notifications")
+        const { success, data } = await res.json()
+        if (success && Array.isArray(data)) {
+          setNotifications(data)
+        } else {
+          setError("Erro ao buscar notificações.")
+        }
+      } catch (err) {
+        setError("Erro ao buscar notificações.")
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchNotifications();
+  }, [])
 
   const handleDelete = (id: string) => {
     setDeleteId(id)
@@ -158,6 +126,13 @@ export function NotificationDataTable() {
     }
   }
 
+  if (loading) {
+    return <div className="p-4">Carregando notificações...</div>
+  }
+  if (error) {
+    return <div className="p-4 text-red-600">{error}</div>
+  }
+
   return (
     <>
       <div className="rounded-md border">
@@ -166,8 +141,8 @@ export function NotificationDataTable() {
             <TableRow>
               <TableHead className="w-[250px]">Título</TableHead>
               <TableHead>Tipo</TableHead>
-              <TableHead>Data</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Data/Hora</TableHead>
+              <TableHead>Lida</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
@@ -177,11 +152,6 @@ export function NotificationDataTable() {
                 <TableCell className="font-medium">
                   <div className="flex flex-col">
                     <span>{notification.title}</span>
-                    {notification.urgent && (
-                      <Badge variant="outline" className="mt-1 w-fit bg-red-100 text-red-800 hover:bg-red-200">
-                        Urgente
-                      </Badge>
-                    )}
                   </div>
                 </TableCell>
                 <TableCell>
@@ -191,16 +161,14 @@ export function NotificationDataTable() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  {format(notification.date, "dd 'de' MMMM, yyyy", { locale: ptBR })}
-                  {notification.scheduled && (
-                    <Badge variant="outline" className="ml-2">
-                      Agendada
-                    </Badge>
-                  )}
+                  {notification.timestamp ?
+                    new Date(notification.timestamp).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) :
+                    "-"
+                  }
                 </TableCell>
                 <TableCell>
-                  <Badge variant={notification.status === "sent" ? "default" : "secondary"}>
-                    {notification.status === "sent" ? "Enviada" : "Rascunho"}
+                  <Badge variant={notification.read ? "default" : "secondary"}>
+                    {notification.read ? "Lida" : "Não lida"}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
@@ -222,11 +190,6 @@ export function NotificationDataTable() {
                           <Edit className="mr-2 h-4 w-4" /> Editar
                         </Link>
                       </DropdownMenuItem>
-                      {notification.status !== "sent" && (
-                        <DropdownMenuItem onClick={() => handleSend(notification.id)}>
-                          <Send className="mr-2 h-4 w-4" /> Enviar
-                        </DropdownMenuItem>
-                      )}
                       <DropdownMenuItem onClick={() => handleDelete(notification.id)} className="text-red-600">
                         <Trash2 className="mr-2 h-4 w-4" /> Excluir
                       </DropdownMenuItem>
