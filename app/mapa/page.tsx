@@ -2,19 +2,19 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { ExhibitorInfo } from "@/components/exhibitor-info"
+import { MapContainer } from "@/components/map-container"
+import { MapLegend } from "@/components/map-legend"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Search, ZoomIn, ZoomOut, Layers, MapPin, X, ChevronLeft, Info, Navigation } from "lucide-react"
-import { MapContainer } from "@/components/map-container"
-import { ExhibitorInfo } from "@/components/exhibitor-info"
-import { MapLegend } from "@/components/map-legend"
-import { mockExhibitors } from "@/lib/mock-data"
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Badge } from "@/components/ui/badge"
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Exhibitor } from "@/lib/types"
+import { ChevronLeft, Info, Layers, MapPin, Navigation, Search, X, ZoomIn, ZoomOut } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export default function MapaPage() {
   const [selectedExhibitor, setSelectedExhibitor] = useState<string | null>(null)
@@ -23,9 +23,27 @@ export default function MapaPage() {
   const [showInfo, setShowInfo] = useState(false)
   const [showSearch, setShowSearch] = useState(false)
   const [showLegend, setShowLegend] = useState(false)
-  const [searchResults, setSearchResults] = useState<typeof mockExhibitors>([])
+  const [searchResults, setSearchResults] = useState<Exhibitor[]>([])
   const [userLocation, setUserLocation] = useState<{ x: number; y: number } | null>(null)
   const [isLocating, setIsLocating] = useState(false)
+  const [exhibitors, setExhibitors] = useState<Exhibitor[]>([])
+
+  // Buscar expositores do banco de dados quando o componente montar
+    useEffect(() => {
+      async function fetchExhibitors() {
+        try {
+          const res = await fetch("/api/exhibitors");
+          const { success, data: exhibitors } = await res.json();
+          if (exhibitors && success) {
+            setExhibitors(exhibitors);
+          }
+        } catch (error) {
+          console.error("Erro ao buscar expositores:", error);
+        }
+      }
+
+      fetchExhibitors();
+    }, [])
 
   // Filtrar resultados de busca quando o termo de busca muda
   useEffect(() => {
@@ -34,11 +52,11 @@ export default function MapaPage() {
       return
     }
 
-    const results = mockExhibitors.filter(
+    const results = exhibitors.filter(
       (exhibitor) =>
         exhibitor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         exhibitor.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        exhibitor.location.stand.toLowerCase().includes(searchTerm.toLowerCase()),
+        exhibitor.location.toLowerCase().includes(searchTerm.toLowerCase()),
     )
     setSearchResults(results)
   }, [searchTerm])
@@ -103,7 +121,7 @@ export default function MapaPage() {
                 <h2 className="text-lg font-bold">Detalhes do Expositor</h2>
                 <div className="w-8"></div> {/* Espaçador para centralizar o título */}
               </div>
-              <ExhibitorInfo exhibitorId={selectedExhibitor} />
+              {selectedExhibitor ? <ExhibitorInfo exhibitorId={selectedExhibitor} /> : <p>Selecione um expositor para ver os detalhes.</p>}
             </div>
           </div>
         </div>
@@ -143,7 +161,7 @@ export default function MapaPage() {
                           <h3 className="font-medium">{exhibitor.name}</h3>
                           <div className="flex items-center text-xs text-muted-foreground mt-1">
                             <MapPin className="mr-1 h-3 w-3" />
-                            {exhibitor.location.area}, {exhibitor.location.stand}
+                            {exhibitor.booth}, {exhibitor.location}
                           </div>
                         </div>
                         <Badge>{exhibitor.category}</Badge>

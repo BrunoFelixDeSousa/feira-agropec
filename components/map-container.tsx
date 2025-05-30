@@ -2,13 +2,11 @@
 
 import type React from "react"
 
-import { useState, useRef, useEffect } from "react"
-import Image from "next/image"
-import { mockExhibitors } from "@/lib/mock-data"
-import { Navigation } from "lucide-react"
-import { Exhibitor } from "@prisma/client"
-import { getAllExhibitors } from "@/lib/db"
 import { getAllExhibitor } from "@/app/api/exhibitors/actions"
+import { Exhibitor } from "@prisma/client"
+import { Navigation } from "lucide-react"
+import Image from "next/image"
+import { useEffect, useRef, useState } from "react"
 
 interface MapContainerProps {
   zoomLevel: number
@@ -32,23 +30,6 @@ const categoryColors: Record<string, string> = {
 type mapPosition = {
   x: number
   y: number
-}
-
-interface StandsProps {
-  id: string
-  name: string
-  description: string
-  category: string
-  location: string
-  booth: string
-  logo: string | null
-  website: string | null
-  phone: string | null
-  email: string | null
-  featured: boolean
-  mapPosition: mapPosition | null
-  createdAt: Date
-  updatedAt: Date
 }
 
 export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocation }: MapContainerProps) {
@@ -176,7 +157,7 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
   }
 
   const handleExhibitorHover = (id: string, x: number, y: number) => {
-    const exhibitor = mockExhibitors.find((e) => e.id === id)
+    const exhibitor = exhibitorData.find((e) => e.id === id)
     if (exhibitor) {
       setShowTooltip({ id, x, y })
     }
@@ -272,34 +253,29 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
           </div>
 
           {/* Marcadores dos estandes */}
-          {filteredExhibitors.map((exhibitor) => (
-            <div
-              key={exhibitor.id}
-              className={`absolute ${getMarkerColor(exhibitor.category)} text-white rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:scale-110 transition-all shadow-lg`}
-              style={{
-                left: `${exhibitor.mapPosition?.x}px`,
-                top: `${exhibitor.mapPosition?.y}px`,
-                transform: "translate(-50%, -50%)",
-              }}
-              onClick={() => handleExhibitorClick(exhibitor.id)}
-              onMouseEnter={() => {
-                const pos = exhibitor.mapPosition;
-                if (
-                  pos &&
-                  typeof pos === 'object' &&
-                  'x' in pos &&
-                  'y' in pos
-                ) {
-                  const { x, y } = pos as { x: number; y: number };
-                  handleExhibitorHover(exhibitor.id, x, y);
-                }
-              }}
-              onMouseLeave={() => setShowTooltip(null)}
-            >
-              <span className="font-bold">{exhibitor.location.split("-")[1]}</span>
-              <span className="font-bold">{exhibitor.location.split("-")[1]}</span>
-            </div>
-          ))}
+          {filteredExhibitors.map((exhibitor) => {
+            const pos = exhibitor.mapPosition as mapPosition | null;
+            return (
+              <div
+                key={exhibitor.id}
+                className={`absolute ${getMarkerColor(exhibitor.category)} text-white rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:scale-110 transition-all shadow-lg`}
+                style={{
+                  left: pos ? `${pos.x}px` : undefined,
+                  top: pos ? `${pos.y}px` : undefined,
+                  transform: "translate(-50%, -50%)",
+                }}
+                onClick={() => handleExhibitorClick(exhibitor.id)}
+                onMouseEnter={() => {
+                  if (pos && typeof pos.x === "number" && typeof pos.y === "number") {
+                    handleExhibitorHover(exhibitor.id, pos.x, pos.y);
+                  }
+                }}
+                onMouseLeave={() => setShowTooltip(null)}
+              >
+                <span className="font-medium">{exhibitor.name}</span>
+              </div>
+            );
+          })}
 
           {/* Tooltip ao passar o mouse */}
           {showTooltip && (

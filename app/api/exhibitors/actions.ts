@@ -6,10 +6,8 @@ import { getAllExhibitors, getExhibitorById } from "@/lib/db";
 export async function getAllExhibitor(){
   try{
     const exhibitors = await getAllExhibitors()
-    console.log(exhibitors)
     return { success: true, data: exhibitors}
   }catch (error){
-    console.log("erro:", error)
     return { success: false, error: error }
   }
 }
