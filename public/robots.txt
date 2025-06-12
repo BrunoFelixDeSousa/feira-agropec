@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://feira-agropec.vercel.app/sitemap.xml
+
+# Block admin pages
+Disallow: /admin/
