@@ -2,7 +2,7 @@
 import { InstallPWA } from "@/components/install-pwa"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { paths } from "@/lib/paths"
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
@@ -73,7 +73,7 @@ export default function Navbar() {
             />
             <div className="flex flex-col">
               <span className="text-primary text-sm lg:text-base font-black">AGROPEC</span>
-              <span className="text-secondary text-[10px] lg:text-xs font-medium -mt-1">2025</span>
+              <span className="text-primary text-[10px] lg:text-xs font-medium -mt-1">2025</span>
             </div>
           </Link>
 
@@ -114,6 +114,7 @@ export default function Navbar() {
             {/* Mobile menu button */}
             <div className="lg:hidden">
               <Sheet>
+                <SheetTitle className="sr-only">Menu</SheetTitle>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className="lg:hidden">
                     <Menu className="h-5 w-5" />

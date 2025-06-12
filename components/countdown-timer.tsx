@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { Calendar, Clock } from "lucide-react"
+import { Calendar } from "lucide-react"
 import { useEffect, useState } from "react"
 
 interface CountdownTimerProps {
@@ -61,11 +61,6 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
                 <div className="text-xs lg:text-sm text-muted-foreground font-medium">{item.label}</div>
               </div>
             ))}
-          </div>
-
-          <div className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <Clock className="h-4 w-4" />
-            <span>09 a 17 de Agosto de 2025</span>
           </div>
         </div>
       </CardContent>

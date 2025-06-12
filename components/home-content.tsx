@@ -226,7 +226,7 @@ export function HomeContent({ events, eventStartDate, exhibitors, statsField }: 
             <CardContent className="p-0 overflow-hidden">
               <div className="relative h-36 sm:h-40">
                 <Image
-                  src="/placeholder.svg?height=400&width=800"
+                  src="/mapa.jpg?height=400&width=800"
                   alt="Mapa da Feira"
                   fill
                   className="object-cover"
@@ -337,7 +337,7 @@ export function HomeContent({ events, eventStartDate, exhibitors, statsField }: 
             <CardContent className="p-0 overflow-hidden">
               <div className="relative h-48">
                 <Image
-                  src="/placeholder.svg?height=400&width=800"
+                  src="/mapa.jpg?height=400&width=800"
                   alt="Mapa da Feira"
                   fill
                   className="object-cover"
