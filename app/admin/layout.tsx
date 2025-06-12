@@ -10,6 +10,7 @@ import { useEffect, useState } from "react"
 
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
 import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { getSession, isAuthenticated, logout } from "@/lib/auth"
 import { paths } from "@/lib/paths"
@@ -79,7 +80,7 @@ export default function AdminLayout({
           <SidebarTrigger className="md:hidden" />
           <div className="flex items-center gap-3">
             <Link href="/admin" className="flex items-center gap-2">
-              <Image src="/placeholder.svg?height=32&width=32" alt="Logo" width={32} height={32} className="h-8 w-8" />
+              <Image src="/logo-agropec.png?height=32&width=32" alt="Logo" width={32} height={32} className="h-8 w-8" />
               <span className="font-semibold hidden sm:inline-block">Admin Feira Agropecuária</span>
             </Link>
           </div>
@@ -102,9 +103,9 @@ export default function AdminLayout({
         <div className="flex-1 flex">
           <AdminSidebar />
           <main className="flex w-full flex-col overflow-hidden">
-            {/* <ScrollArea className="h-[calc(100vh-3.5rem)]"> */}
+            <ScrollArea className="h-[calc(100vh-3.5rem)]">
               <div className="flex-1 space-y-4 p-5 pt-6">{children}</div>
-            {/* </ScrollArea> */}
+            </ScrollArea>
           </main>
         </div>
       </div>

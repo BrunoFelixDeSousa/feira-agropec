@@ -79,7 +79,7 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning className={montserrat.variable}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="format-detection" content="telephone=no" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
@@ -89,7 +89,6 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <FavoritesProvider>
             <div className="flex min-h-screen flex-col">
-              {/* <Navbar /> */}
               <main className="flex-1 pb-4">{children}</main>
               <ConditionalFooter />
             </div>

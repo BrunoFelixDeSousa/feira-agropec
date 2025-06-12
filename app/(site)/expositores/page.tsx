@@ -435,14 +435,6 @@ export default function ExpositoresPage() {
               >
                 <List className="h-4 w-4" />
               </Button>
-              {/* <Button
-                variant={viewMode === "map" ? "default" : "ghost"}
-                size="sm"
-                className="rounded-none h-8 px-2"
-                onClick={() => setViewMode("map")}
-              >
-                <MapIcon className="h-4 w-4" />
-              </Button> */}
             </div>
           </div>
           {isLoading ? (

@@ -1,13 +1,12 @@
 "use client"
 
-import { EventDetailsDialog } from "@/components/event-details-dialog"
 import { FavoriteButton } from "@/components/favorite-button"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import type { Event } from "@/lib/types"
 import { Clock, MapPin } from "lucide-react"
-import { useState } from "react"
+import Link from "next/link"
 
 interface EventCardProps {
   event: Event
@@ -15,8 +14,6 @@ interface EventCardProps {
 }
 
 export function EventCard({ event, showFavorite = false }: EventCardProps) {
-  const [showDetails, setShowDetails] = useState(false)
-
   // Obter cor com base no tipo de evento
   const getEventColor = (type: string) => {
     const colors: Record<string, string> = {
@@ -71,17 +68,17 @@ export function EventCard({ event, showFavorite = false }: EventCardProps) {
                   variant="outline"
                   size="sm"
                   className="h-6 sm:h-7 text-[10px] sm:text-xs"
-                  onClick={() => setShowDetails(true)}
+                  asChild
                 >
-                  Detalhes
+                  <Link href={`/programacao/${event.id}`}>
+                    Detalhes
+                  </Link>
                 </Button>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
-
-      <EventDetailsDialog event={event} open={showDetails} onOpenChange={setShowDetails} />
     </>
   )
 }
