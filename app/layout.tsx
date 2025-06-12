@@ -35,10 +35,24 @@ export const metadata: Metadata = {
   authors: [{ name: "Sindicato dos Produtores Rurais de Paragominas" }],
   creator: "Sindicato dos Produtores Rurais de Paragominas",
   publisher: "AGROPEC 2025",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: "https://feira-agropec.vercel.app",
+  },
   openGraph: {
     title: "AGROPEC 2025 - Feira Agropecuária de Paragominas",
     description: "58ª Exposição Estadual dos Produtores do Campo. Cultivando o Futuro, Valorizando Nossas Raízes.",
-    url: "https://agropec2025.com.br",
+    url: "https://feira-agropec.vercel.app",
     siteName: "AGROPEC 2025",
     locale: "pt_BR",
     type: "website",
