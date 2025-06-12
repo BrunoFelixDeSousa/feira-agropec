@@ -1,108 +1,74 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { motion } from "framer-motion"
+import { Calendar, Clock } from "lucide-react"
+import { useEffect, useState } from "react"
 
 interface CountdownTimerProps {
   targetDate: string
 }
 
 export function CountdownTimer({ targetDate }: CountdownTimerProps) {
-  const [days, setDays] = useState(0)
-  const [hours, setHours] = useState(0)
-  const [minutes, setMinutes] = useState(0)
-  const [seconds, setSeconds] = useState(0)
-  const [isExpired, setIsExpired] = useState(false)
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  })
 
   useEffect(() => {
-    const target = new Date(targetDate).getTime()
+    const calculateTimeLeft = () => {
+      const difference = +new Date(targetDate) - +new Date()
 
-    const interval = setInterval(() => {
-      const now = new Date().getTime()
-      const difference = target - now
-
-      if (difference <= 0) {
-        clearInterval(interval)
-        setIsExpired(true)
-        return
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        })
       }
+    }
 
-      const d = Math.floor(difference / (1000 * 60 * 60 * 24))
-      const h = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-      const m = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
-      const s = Math.floor((difference % (1000 * 60)) / 1000)
+    calculateTimeLeft()
+    const timer = setInterval(calculateTimeLeft, 1000)
 
-      setDays(d)
-      setHours(h)
-      setMinutes(m)
-      setSeconds(s)
-    }, 1000)
-
-    return () => clearInterval(interval)
+    return () => clearInterval(timer)
   }, [targetDate])
 
   return (
-    <Card className="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-950/40 dark:to-green-900/20 border-green-200 dark:border-green-800">
-      <CardContent className="p-3 sm:p-4">
+    <Card className="agropec-card border-primary/20">
+      <CardContent className="p-4 lg:p-6">
         <div className="text-center">
-          <h3 className="text-base sm:text-lg font-bold mb-2 sm:mb-3 text-green-800 dark:text-green-400">
-            {isExpired ? "A Feira já começou!" : "Contagem Regressiva"}
-          </h3>
-          {!isExpired ? (
-            <div className="grid grid-cols-4 gap-1 sm:gap-2">
-              <CountdownItem value={days} label="Dias" />
-              <CountdownItem value={hours} label="Horas" />
-              <CountdownItem value={minutes} label="Min" />
-              <CountdownItem value={seconds} label="Seg" />
-            </div>
-          ) : (
-            <p className="text-green-700 dark:text-green-300 font-medium text-sm sm:text-base">
-              Venha nos visitar no Parque de Exposições de Paragominas!
-            </p>
-          )}
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Calendar className="h-5 w-5 text-primary" />
+            <h2 className="text-lg lg:text-xl font-bold text-primary">Contagem Regressiva</h2>
+          </div>
+
+          <p className="text-sm lg:text-base text-muted-foreground mb-4">Faltam para a AGROPEC 2025</p>
+
+          <div className="grid grid-cols-4 gap-2 lg:gap-4">
+            {[
+              { label: "Dias", value: timeLeft.days },
+              { label: "Horas", value: timeLeft.hours },
+              { label: "Min", value: timeLeft.minutes },
+              { label: "Seg", value: timeLeft.seconds },
+            ].map((item) => (
+              <div key={item.label} className="text-center">
+                <div className="bg-primary text-white rounded-lg p-2 lg:p-4 mb-1">
+                  <div className="text-xl lg:text-3xl font-bold">{item.value.toString().padStart(2, "0")}</div>
+                </div>
+                <div className="text-xs lg:text-sm text-muted-foreground font-medium">{item.label}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+            <Clock className="h-4 w-4" />
+            <span>09 a 17 de Agosto de 2025</span>
+          </div>
         </div>
       </CardContent>
     </Card>
-  )
-}
-
-interface CountdownItemProps {
-  value: number
-  label: string
-}
-
-function CountdownItem({ value, label }: CountdownItemProps) {
-  const [key, setKey] = useState(0)
-  const [prevValue, setPrevValue] = useState(value)
-
-  // Detectar mudança de valor para animar
-  useEffect(() => {
-    if (prevValue !== value) {
-      setKey((prev) => prev + 1)
-      setPrevValue(value)
-    }
-  }, [value, prevValue])
-
-  const flipVariants = {
-    initial: { rotateX: 0 },
-    flip: { rotateX: 360, transition: { duration: 0.6 } },
-  }
-
-  return (
-    <div className="flex flex-col items-center">
-      <motion.div
-        key={key}
-        initial="initial"
-        animate="flip"
-        variants={flipVariants}
-        className="relative bg-white dark:bg-green-950 rounded-lg shadow-sm w-full py-1 sm:py-2 px-1 text-center mb-1"
-      >
-        <span className="text-lg sm:text-2xl font-bold text-green-700 dark:text-green-400">
-          {value.toString().padStart(2, "0")}
-        </span>
-      </motion.div>
-      <span className="text-[10px] sm:text-xs text-muted-foreground">{label}</span>
-    </div>
   )
 }

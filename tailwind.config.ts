@@ -26,9 +26,12 @@ const config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "#1E4844", // Verde escuro da AGROPEC
+          light: "#7DA548", // Verde claro da AGROPEC
+          dark: "#163230", // Versão mais escura do verde principal
           foreground: "hsl(var(--primary-foreground))",
         },
+        "agropec-gold": "#D4AF37", // Dourado para destaques
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
@@ -53,19 +56,6 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        green: {
-          50: "#f0fdf4",
-          100: "#dcfce7",
-          200: "#bbf7d0",
-          300: "#86efac",
-          400: "#4ade80",
-          500: "#22c55e",
-          600: "#16a34a",
-          700: "#15803d",
-          800: "#166534",
-          900: "#14532d",
-          950: "#052e16",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -81,20 +71,13 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "collapsible-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-collapsible-content-height)" },
-        },
-        "collapsible-up": {
-          from: { height: "var(--radix-collapsible-content-height)" },
-          to: { height: "0" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "collapsible-down": "collapsible-down 0.2s ease-out",
-        "collapsible-up": "collapsible-up 0.2s ease-out",
+      },
+      fontFamily: {
+        sans: ["Montserrat", "sans-serif"],
       },
     },
   },

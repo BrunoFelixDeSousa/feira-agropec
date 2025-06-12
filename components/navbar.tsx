@@ -2,11 +2,12 @@
 import { InstallPWA } from "@/components/install-pwa"
 import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { paths } from "@/lib/paths"
 import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 import { Bell, Calendar, Heart, Home, MapPin, Menu, Users } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -62,11 +63,19 @@ export default function Navbar() {
         )}
       >
         <div className="container mx-auto flex h-14 lg:h-16 items-center px-4">
-          <div className="flex items-center gap-2 font-bold">
-            <span className="h-7 w-7 bg-green-600 rounded-md flex items-center justify-center text-white">A</span>
-            <span className="hidden sm:inline">AGROPEC</span>
-            <span className="sm:hidden">A</span>
-          </div>
+          <Link href="/" className="flex items-center gap-2 font-bold">
+            <Image
+              src="/logo-agropec.png"
+              alt="AGROPEC 2025"
+              width={40}
+              height={40}
+              className="h-8 w-8 lg:h-10 lg:w-10"
+            />
+            <div className="flex flex-col">
+              <span className="text-primary text-sm lg:text-base font-black">AGROPEC</span>
+              <span className="text-secondary text-[10px] lg:text-xs font-medium -mt-1">2025</span>
+            </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex ml-10 space-x-1">
@@ -77,8 +86,8 @@ export default function Navbar() {
                 className={cn(
                   "px-3 py-2 rounded-md text-sm font-medium transition-colors relative",
                   pathname === route.href
-                    ? "text-green-600"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                    ? "text-primary bg-primary/10"
+                    : "text-muted-foreground hover:text-primary hover:bg-primary/5",
                 )}
               >
                 <div className="flex items-center gap-2">
@@ -87,7 +96,7 @@ export default function Navbar() {
                 </div>
                 {pathname === route.href && (
                   <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-600"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
                     layoutId="navbar-indicator-desktop"
                     transition={{ type: "spring", duration: 0.5 }}
                   />
@@ -112,9 +121,6 @@ export default function Navbar() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[250px] sm:w-[300px] pt-10">
-                  <SheetHeader>
-                    <SheetTitle>Menu</SheetTitle>
-                  </SheetHeader>
                   <nav className="flex flex-col gap-4">
                     {routes.map((route) => (
                       <Link
@@ -123,8 +129,8 @@ export default function Navbar() {
                         className={cn(
                           "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                           pathname === route.href
-                            ? "bg-muted text-green-600"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                            ? "bg-primary/10 text-primary"
+                            : "text-muted-foreground hover:text-primary hover:bg-primary/5",
                         )}
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
@@ -152,12 +158,12 @@ export default function Navbar() {
               href={route.href}
               className={cn(
                 "flex flex-col items-center justify-center gap-1 text-xs font-medium relative",
-                pathname === route.href ? "text-green-600" : "text-muted-foreground hover:text-foreground",
+                pathname === route.href ? "text-primary" : "text-muted-foreground hover:text-primary",
               )}
             >
               {pathname === route.href && (
                 <motion.span
-                  className="absolute inset-x-0 -top-[13px] mx-auto h-1 w-12 bg-green-600 rounded-full"
+                  className="absolute inset-x-0 -top-[13px] mx-auto h-1 w-12 bg-primary rounded-full"
                   layoutId="navbar-indicator"
                   transition={{ type: "spring", duration: 0.5 }}
                 />
@@ -170,7 +176,7 @@ export default function Navbar() {
       </nav>
 
       {/* Espaçador para compensar a navegação fixa na parte inferior - apenas para mobile */}
-      {/* <div className="h-16 lg:h-0"></div> */}
+      <div className="h-4 lg:h-0"></div>
     </>
   )
 }

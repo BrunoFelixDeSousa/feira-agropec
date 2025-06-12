@@ -202,19 +202,11 @@ export default function MapaPage() {
         <CardContent className="p-0">
           <Tabs defaultValue="todos" className="w-full">
             <div className="px-4 pt-4">
-              <TabsList className="w-full grid grid-cols-4 h-auto">
+              <TabsList className="w-full grid h-auto">
                 <TabsTrigger value="todos" className="py-1.5 text-xs">
-                  Todos
+                  Área Geral
                 </TabsTrigger>
-                <TabsTrigger value="pavilhao-a" className="py-1.5 text-xs">
-                  Pavilhão A
-                </TabsTrigger>
-                <TabsTrigger value="pavilhao-b" className="py-1.5 text-xs">
-                  Pavilhão B
-                </TabsTrigger>
-                <TabsTrigger value="area-externa" className="py-1.5 text-xs">
-                  Área Externa
-                </TabsTrigger>
+
               </TabsList>
             </div>
 
@@ -223,30 +215,6 @@ export default function MapaPage() {
                 <MapContainer
                   zoomLevel={zoomLevel}
                   onSelectExhibitor={handleSelectExhibitor}
-                  userLocation={userLocation}
-                />
-              </TabsContent>
-              <TabsContent value="pavilhao-a" className="mt-0">
-                <MapContainer
-                  zoomLevel={zoomLevel}
-                  onSelectExhibitor={handleSelectExhibitor}
-                  filter="pavilhao-a"
-                  userLocation={userLocation}
-                />
-              </TabsContent>
-              <TabsContent value="pavilhao-b" className="mt-0">
-                <MapContainer
-                  zoomLevel={zoomLevel}
-                  onSelectExhibitor={handleSelectExhibitor}
-                  filter="pavilhao-b"
-                  userLocation={userLocation}
-                />
-              </TabsContent>
-              <TabsContent value="area-externa" className="mt-0">
-                <MapContainer
-                  zoomLevel={zoomLevel}
-                  onSelectExhibitor={handleSelectExhibitor}
-                  filter="area-externa"
                   userLocation={userLocation}
                 />
               </TabsContent>

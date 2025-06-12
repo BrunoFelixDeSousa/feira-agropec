@@ -207,7 +207,7 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
       >
         <div className="relative" style={{ width: mapDimensions.width, height: mapDimensions.height }}>
           <Image
-            src="/mapa-oficial.JPG?height=800&width=1000"
+            src="/mapa.jpg?height=800&width=1000"
             alt="Mapa da Feira"
             width={mapDimensions.width}
             height={mapDimensions.height}
@@ -232,24 +232,6 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
                 </span>
               </div>
             ))}
-          </div>
-
-          {/* Áreas do mapa */}
-          <div className="absolute left-[65px] top-[500px] w-[500px] h-[390px] border-2 border-purple-700/40 bg-purple-500/10 rounded-lg flex items-center justify-center">
-            <span className="text-purple-700 font-bold bg-white/80 px-2 py-1 rounded">Palco Principal</span>
-          </div>
-          
-          <div className="absolute left-[570px] top-[200px] w-[380px] h-[700px] border-2 border-green-500/30 bg-green-700/30 rounded-lg flex items-center justify-center">
-            <span className="text-green-700 font-bold bg-white/80 px-2 py-1 rounded">Pavilhão A</span>
-          </div>
-          
-          <div className="absolute left-[65px] top-[193px] w-[500px] h-[305px] border-2 border-blue-500/30 bg-blue-700/20 rounded-lg flex items-center justify-center">
-            <span className="text-blue-700 font-bold bg-white/80 px-2 py-1 rounded">Pavilhão B</span>
-          </div>
-
-
-          <div className="absolute left-[60px] top-[22px] w-[500px] h-[160px] border-2 border-red-500/30 bg-red-700/20 rounded-lg flex items-center justify-start">
-            <span className="text-green-700 font-bold bg-white/80 px-2 py-1 rounded">Pavilhão C</span>
           </div>
 
           {/* Marcadores dos estandes */}

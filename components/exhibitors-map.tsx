@@ -2,13 +2,13 @@
 
 import type React from "react"
 
-import { useState, useRef, useEffect } from "react"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { ZoomIn, ZoomOut, Navigation } from "lucide-react"
 import { ExhibitorInfo } from "@/components/exhibitor-info"
+import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import type { Exhibitor } from "@/lib/types"
+import { Navigation, ZoomIn, ZoomOut } from "lucide-react"
+import Image from "next/image"
+import { useEffect, useRef, useState } from "react"
 
 interface ExhibitorsMapProps {
   exhibitors: Exhibitor[]
@@ -209,7 +209,7 @@ export function ExhibitorsMap({ exhibitors }: ExhibitorsMapProps) {
         >
           <div className="relative" style={{ width: mapDimensions.width, height: mapDimensions.height }}>
             <Image
-              src="/mapa-oficial.JPG?height=800&width=1000"
+              src="/mapa.jpg?height=800&width=1000"
               alt="Mapa da Feira"
               width={mapDimensions.width}
               height={mapDimensions.height}

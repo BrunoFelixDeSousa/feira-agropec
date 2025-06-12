@@ -1,21 +1,21 @@
 {
-  "name": "Feira Agropecuária de Paragominas",
-  "short_name": "AGROPEC",
-  "description": "Aplicativo oficial da Feira Agropecuária de Paragominas",
+  "name": "AGROPEC 2025 - Feira Agropecuária de Paragominas",
+  "short_name": "AGROPEC 2025",
+  "description": "58ª Exposição Estadual dos Produtores do Campo - Cultivando o Futuro, Valorizando Nossas Raízes",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
-  "theme_color": "#4CAF50",
+  "theme_color": "#1E4844",
   "icons": [
     {
-      "src": "/icons/apple-touch-icon.svg",
+      "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icons/apple-touch-icon.svg",
+      "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -23,18 +23,25 @@
   ],
   "shortcuts": [
     {
-      "name": "Mapa",
+      "name": "Mapa Interativo",
       "short_name": "Mapa",
-      "description": "Ver mapa da feira",
+      "description": "Navegue pelo parque de exposições",
       "url": "/mapa",
-      "icons": [{ "src": "/icons/apple-touch-icon.svg", "sizes": "192x192" }]
+      "icons": [{ "src": "/icons/map-icon.png", "sizes": "192x192" }]
     },
     {
       "name": "Programação",
       "short_name": "Agenda",
-      "description": "Ver programação do evento",
+      "description": "Veja a programação completa do evento",
       "url": "/programacao",
-      "icons": [{ "src": "/icons/apple-touch-icon.svg", "sizes": "192x192" }]
+      "icons": [{ "src": "/icons/calendar-icon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Expositores",
+      "short_name": "Expositores",
+      "description": "Conheça os expositores participantes",
+      "url": "/expositores",
+      "icons": [{ "src": "/icons/exhibitors-icon.png", "sizes": "192x192" }]
     }
   ]
 }
