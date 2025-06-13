@@ -78,32 +78,6 @@ export default function Footer() {
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold mb-4">Informações</h3>
-                <ul className="space-y-2 text-sm">
-                  <li>
-                    <Link href="/sobre" className="text-muted-foreground hover:text-foreground">
-                      Sobre a Feira
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/contato" className="text-muted-foreground hover:text-foreground">
-                      Contato
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/como-chegar" className="text-muted-foreground hover:text-foreground">
-                      Como Chegar
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/faq" className="text-muted-foreground hover:text-foreground">
-                      Perguntas Frequentes
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-
-              <div>
                 <h3 className="text-lg font-semibold mb-4">Contato</h3>
                 <address className="not-italic text-sm text-muted-foreground space-y-2">
                   <p>Parque de Exposições de Paragominas</p>
