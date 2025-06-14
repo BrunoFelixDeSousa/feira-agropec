@@ -1,37 +1,35 @@
 "use client"
 
-import { Label } from "@/components/ui/label"
 
-import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { CalendarDays, MapPin } from "lucide-react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import { CalendarDays, Bell, MapPin } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
-import { Separator } from "@/components/ui/separator"
-import { toast } from "@/components/ui/use-toast"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Separator } from "@/components/ui/separator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
+import { toast } from "@/hooks/use-toast"
 
 const generalFormSchema = z.object({
   siteName: z.string().min(2, {
     message: "O nome do site deve ter pelo menos 2 caracteres.",
   }),
-  siteDescription: z.string().min(10, {
-    message: "A descrição do site deve ter pelo menos 10 caracteres.",
-  }),
   eventStartDate: z.string(),
   eventEndDate: z.string(),
   contactEmail: z.string().email({
     message: "Insira um e-mail válido.",
-  }),
-  contactPhone: z.string(),
-  address: z.string(),
+  }).optional().or(z.literal("")),
+  contactPhone: z.string().optional(),
+  address: z.string().optional(),
+  socialFacebook: z.string().optional(),
+  socialInstagram: z.string().optional(),
+  socialTwitter: z.string().optional(),
 })
 
 const notificationsFormSchema = z.object({
@@ -44,17 +42,20 @@ const notificationsFormSchema = z.object({
 
 export function SettingsForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   const generalForm = useForm<z.infer<typeof generalFormSchema>>({
     resolver: zodResolver(generalFormSchema),
     defaultValues: {
-      siteName: "Feira Agropecuária",
-      siteDescription: "A maior feira agropecuária da região",
-      eventStartDate: "2023-09-15",
-      eventEndDate: "2023-09-22",
-      contactEmail: "contato@feiraagropecuaria.com",
-      contactPhone: "(11) 99999-9999",
-      address: "Parque de Exposições, São Paulo - SP",
+      siteName: "",
+      eventStartDate: "",
+      eventEndDate: "",
+      contactEmail: "",
+      contactPhone: "",
+      address: "",
+      socialFacebook: "",
+      socialInstagram: "",
+      socialTwitter: "",
     },
   })
 
@@ -69,26 +70,81 @@ export function SettingsForm() {
     },
   })
 
-  function onSubmitGeneral(values: z.infer<typeof generalFormSchema>) {
+  // Carregar configurações do banco de dados
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        setIsLoading(true)
+        const response = await fetch('/api/settings')
+        const result = await response.json()
+        
+        if (result.success && result.data) {
+          const settings = result.data
+          generalForm.reset({
+            siteName: settings.siteName || "Feira Agropecuária",
+            eventStartDate: settings.eventStartDate || "",
+            eventEndDate: settings.eventEndDate || "",
+            contactEmail: settings.contactEmail || "",
+            contactPhone: settings.contactPhone || "",
+            address: settings.address || "",
+            socialFacebook: settings.socialFacebook || "",
+            socialInstagram: settings.socialInstagram || "",
+            socialTwitter: settings.socialTwitter || "",
+          })
+        }
+      } catch (error) {
+        console.error('Erro ao carregar configurações:', error)
+        toast({
+          title: "Erro",
+          description: "Erro ao carregar configurações. Usando valores padrão.",
+          variant: "destructive",
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadSettings()
+  }, [generalForm])
+
+  async function onSubmitGeneral(values: z.infer<typeof generalFormSchema>) {
     setIsSubmitting(true)
 
-    // Simulação de envio para API
-    setTimeout(() => {
-      console.log("Configurações gerais:", values)
-
-      toast({
-        title: "Configurações salvas",
-        description: "As configurações gerais foram salvas com sucesso.",
+    try {
+      const response = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
       })
 
+      const result = await response.json()
+
+      if (result.success) {
+        toast({
+          title: "Configurações salvas",
+          description: "As configurações gerais foram salvas com sucesso.",
+        })
+      } else {
+        throw new Error(result.error || 'Erro ao salvar configurações')
+      }
+    } catch (error) {
+      console.error('Erro ao salvar configurações:', error)
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar configurações. Tente novamente.",
+        variant: "destructive",
+      })
+    } finally {
       setIsSubmitting(false)
-    }, 1000)
+    }
   }
 
   function onSubmitNotifications(values: z.infer<typeof notificationsFormSchema>) {
     setIsSubmitting(true)
 
-    // Simulação de envio para API
+    // TODO: Implementar API para configurações de notificações
     setTimeout(() => {
       console.log("Configurações de notificações:", values)
 
@@ -101,12 +157,23 @@ export function SettingsForm() {
     }, 1000)
   }
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+          <p className="text-muted-foreground">Carregando configurações...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <Tabs defaultValue="general" className="space-y-4">
       <TabsList>
         <TabsTrigger value="general">Geral</TabsTrigger>
-        <TabsTrigger value="notifications">Notificações</TabsTrigger>
-        <TabsTrigger value="appearance">Aparência</TabsTrigger>
+        {/* <TabsTrigger value="notifications">Notificações</TabsTrigger> */}
+        {/* <TabsTrigger value="appearance">Aparência</TabsTrigger> */}
       </TabsList>
 
       <TabsContent value="general">
@@ -121,30 +188,14 @@ export function SettingsForm() {
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Informações do Site</h3>
 
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <FormField
-                      control={generalForm.control}
-                      name="siteName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nome do Site</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
                   <FormField
                     control={generalForm.control}
-                    name="siteDescription"
+                    name="siteName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Descrição do Site</FormLabel>
+                        <FormLabel>Nome do Site</FormLabel>
                         <FormControl>
-                          <Textarea {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -244,6 +295,56 @@ export function SettingsForm() {
                   />
                 </div>
 
+                <Separator />
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Redes Sociais</h3>
+
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <FormField
+                      control={generalForm.control}
+                      name="socialFacebook"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Facebook</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://facebook.com/..." {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={generalForm.control}
+                      name="socialInstagram"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Instagram</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://instagram.com/..." {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={generalForm.control}
+                      name="socialTwitter"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Twitter</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://twitter.com/..." {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+
                 <div className="flex justify-end">
                   <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting ? "Salvando..." : "Salvar Configurações"}
@@ -255,7 +356,7 @@ export function SettingsForm() {
         </Card>
       </TabsContent>
 
-      <TabsContent value="notifications">
+      {/* <TabsContent value="notifications">
         <Card>
           <CardHeader>
             <CardTitle>Configurações de Notificações</CardTitle>
@@ -344,9 +445,9 @@ export function SettingsForm() {
             </Form>
           </CardContent>
         </Card>
-      </TabsContent>
+      </TabsContent> */}
 
-      <TabsContent value="appearance">
+      {/* <TabsContent value="appearance">
         <Card>
           <CardHeader>
             <CardTitle>Aparência</CardTitle>
@@ -398,7 +499,7 @@ export function SettingsForm() {
             </div>
           </CardContent>
         </Card>
-      </TabsContent>
+      </TabsContent> */}
     </Tabs>
   )
 }
