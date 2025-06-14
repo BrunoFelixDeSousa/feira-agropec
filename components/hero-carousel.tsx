@@ -83,7 +83,7 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
       {/* Slides */}
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
-          key={slides[current].id}
+          key={slides[current]?.id}
           custom={direction}
           variants={slideVariants}
           initial="enter"
@@ -98,8 +98,8 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
         >
           <div className="relative h-full">
             <Image
-              src={slides[current].image || "/placeholder.svg"}
-              alt={slides[current].title}
+              src={slides[current]?.image || "/placeholder.svg"}
+              alt={slides[current]?.title || "Slide Image"}
               fill
               className="object-cover brightness-75"
               priority
@@ -108,13 +108,13 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
             <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6 md:p-10 lg:p-16 text-white container mx-auto">
               <div className="max-w-3xl">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 md:mb-2">
-                  {slides[current].title}
+                  {slides[current]?.title}
                 </h1>
-                <p className="text-base sm:text-lg md:text-xl mb-3 sm:mb-4 md:mb-6">{slides[current].description}</p>
+                <p className="text-base sm:text-lg md:text-xl mb-3 sm:mb-4 md:mb-6">{slides[current]?.description}</p>
                 <div className="flex gap-2">
-                  {slides[current].link && (
+                  {slides[current]?.link && (
                     <Button asChild size={isMobile ? "sm" : "default"} className="bg-green-600 hover:bg-green-700">
-                      <Link href={slides[current].link}>Saiba mais</Link>
+                      <Link href={slides[current]?.link}>Saiba mais</Link>
                     </Button>
                   )}
                 </div>

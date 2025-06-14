@@ -18,7 +18,7 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "AGROPEC 2025 - Feira Agropecuária de Paragominas",
   description:
-    "58ª Exposição Estadual dos Produtores do Campo. Cultivando o Futuro, Valorizando Nossas Raízes. 09 a 17 de Agosto de 2025 em Paragominas - PA.",
+    "58ª Exposição Estadual dos Produtores do Campo de 09 a 17 de Agosto de 2025 em Paragominas - PA. Tem como objetivo fomentar a geração de negócios por meio da exposição e comercialização de produtos de segmentos da área da pecuária, agricultura e indústria fortalecendo o agronegócio municipal e estadual que gera oportunidades de acesso a máquinas e implementos agrícolas e industriais, insumos pecuários e veículos de todos os portes além da geração de empregos diretos e indiretos. Do mesmo modo, a Agropec visa promover a integração cultural entre os municípios da região do nordeste do estado do Pará com atrações culturais regionais e nacionais, assim como seguir sendo exemplo de sustentabilidade, mantendo o título de ser a primeira feira carbono neutro do norte do País.",
   manifest: "/manifest.json",
   keywords: [
     "AGROPEC",

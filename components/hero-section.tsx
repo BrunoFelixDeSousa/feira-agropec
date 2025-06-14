@@ -61,41 +61,6 @@ export function HeroSection() {
           </div>
         </div>
 
-
-        {/* <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-2xl mx-auto">
-          <Button
-            asChild
-            size="lg"
-            className="bg-white text-primary hover:bg-gray-100 font-semibold shadow-lg transition-all duration-300 hover:scale-105"
-          >
-            <Link href="/programacao" className="flex items-center justify-center">
-              Ver Programação
-            </Link>
-          </Button>
-
-          <Button
-            asChild
-            size="lg"
-            variant="outline"
-            className="text-white border-2 border-white hover:bg-white hover:text-primary font-semibold shadow-lg transition-all duration-300 hover:scale-105 bg-transparent"
-          >
-            <Link href="/mapa" className="flex items-center justify-center">
-              Explorar Mapa
-            </Link>
-          </Button>
-
-          <Button
-            asChild
-            size="lg"
-            variant="outline"
-            className="text-white border-2 border-white hover:bg-white hover:text-primary font-semibold shadow-lg transition-all duration-300 hover:scale-105 bg-transparent"
-          >
-            <Link href="/expositores" className="flex items-center justify-center">
-              Expositores
-            </Link>
-          </Button>
-        </div> */}
-
         {/* Informação da realização */}
         <div className="mt-8 pt-4 border-t border-white/20">
           <p className="text-xs lg:text-sm opacity-80">

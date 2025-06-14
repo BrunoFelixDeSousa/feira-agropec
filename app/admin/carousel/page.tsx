@@ -1,4 +1,4 @@
-import { CarouselManager } from "@/components/admin/carousel-manager"
+import { CarouselManager } from "@/components/admin/carousel-manager-stable"
 
 export default function CarouselPage() {
   return (

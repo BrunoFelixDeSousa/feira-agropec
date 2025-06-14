@@ -2,9 +2,11 @@ import { ExhibitorForm } from "@/components/admin/exhibitor-form"
 import { mockExhibitors } from "@/lib/mock-data"
 import { notFound } from "next/navigation"
 
-export default function EditExhibitorPage({ params }: { params: { id: string } }) {
+export default async function EditExhibitorPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  
   // Se for "novo", retornamos um formulário vazio
-  if (params.id === "novo") {
+  if (id === "novo") {
     return (
       <div className="space-y-4">
         <h2 className="text-3xl font-bold tracking-tight">Novo Expositor</h2>
@@ -14,7 +16,7 @@ export default function EditExhibitorPage({ params }: { params: { id: string } }
   }
 
   // Caso contrário, buscamos o expositor pelo ID
-  const exhibitor = mockExhibitors.find((e) => e.id === params.id)
+  const exhibitor = mockExhibitors.find((e) => e.id === id)
 
   if (!exhibitor) {
     notFound()
