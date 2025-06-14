@@ -2,25 +2,59 @@ import { RecentActivity } from "@/components/admin/recent-activity"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { paths } from "@/lib/paths"
+import prisma from "@/lib/prisma"
 import { Bell, CalendarDays, MapPin, Plus, Settings } from "lucide-react"
 import Link from "next/link"
 import { Suspense } from "react"
 
 async function getStats() {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/stats`, {
-      cache: 'no-store'
-    })
-    if (!response.ok) throw new Error('Failed to fetch stats')
-    const data = await response.json()
-    return data.data
+    // Buscar dados diretamente do banco sem fazer fetch HTTP
+    const [exhibitorCount, eventCount, notificationCount] = await Promise.all([
+      prisma.exhibitor.count(),
+      prisma.event.count(),
+      prisma.notification.count(),
+    ])
+
+    // Buscar dados recentes
+    const [recentEvents, recentExhibitors, recentNotifications] = await Promise.all([
+      prisma.event.findMany({
+        where: {
+          date: {
+            gte: new Date().toISOString().split('T')[0]
+          }
+        },
+        orderBy: { date: "asc" },
+        take: 5
+      }),
+      prisma.exhibitor.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 5
+      }),
+      prisma.notification.findMany({
+        orderBy: { timestamp: "desc" },
+        take: 5
+      })
+    ])
+
+    return {
+      counts: {
+        exhibitors: exhibitorCount,
+        events: eventCount,
+        notifications: notificationCount,
+      },
+      recent: {
+        events: recentEvents,
+        exhibitors: recentExhibitors,
+        notifications: recentNotifications
+      }
+    }
   } catch (error) {
     console.error('Error fetching stats:', error)
     // Retornar dados padrão em caso de erro
     return {
-      counts: { exhibitors: 0, events: 0, notifications: 0, users: 0 },
-      recent: { events: [], exhibitors: [], notifications: [] },
-      chartData: []
+      counts: { exhibitors: 0, events: 0, notifications: 0 },
+      recent: { events: [], exhibitors: [], notifications: [] }
     }
   }
 }
