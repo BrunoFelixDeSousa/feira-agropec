@@ -3,7 +3,7 @@ export const paths = {
   admin: {
     root: "/admin",
     expositores: "/admin/expositores",
-    eventos: "/admin/eventos",
+    eventos: "/admin/programacao",
     notificacoes: "/admin/notificacoes",
     mapa: "/admin/mapa",
     carousel: "/admin/carousel",

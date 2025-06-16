@@ -1,5 +1,5 @@
 import { EventForm } from "@/components/admin/event-form"
-import { mockEvents } from "@/lib/mock-data"
+import { getEventById } from "@/lib/db"
 import { notFound } from "next/navigation"
 
 export default async function EditEventPage({ params }: { params: Promise<{ id: string }> }) {
@@ -15,17 +15,22 @@ export default async function EditEventPage({ params }: { params: Promise<{ id: 
     )
   }
 
-  // Caso contrário, buscamos o evento pelo ID
-  const event = mockEvents.find((e) => e.id === id)
+  // Caso contrário, buscamos o evento pelo ID diretamente do banco
+  try {
+    const event = await getEventById(id)
 
-  if (!event) {
+    if (!event) {
+      notFound()
+    }
+
+    return (
+      <div className="space-y-4">
+        <h2 className="text-3xl font-bold tracking-tight">Editar Evento</h2>
+        <EventForm event={event} />
+      </div>
+    )
+  } catch (error) {
+    console.error("Erro ao buscar evento:", error)
     notFound()
   }
-
-  return (
-    <div className="space-y-4">
-      <h2 className="text-3xl font-bold tracking-tight">Editar Evento</h2>
-      <EventForm event={event} />
-    </div>
-  )
 }

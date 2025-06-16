@@ -11,7 +11,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import { createEventAction, updateEventAction } from "@/app/admin/eventos/actions"
+import { createEventAction, updateEventAction } from "@/app/admin/programacao/actions"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"

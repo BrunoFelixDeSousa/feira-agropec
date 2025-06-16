@@ -1,7 +1,8 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import { NotificationDataTable } from "@/components/admin/notification-data-table"
+import { Button } from "@/components/ui/button"
+import { paths } from "@/lib/paths"
 import { Plus } from "lucide-react"
+import Link from "next/link"
 
 export default function NotificationsPage() {
   return (
@@ -9,7 +10,7 @@ export default function NotificationsPage() {
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Notificações</h2>
         <Button asChild>
-          <Link href="/admin/notificacoes/nova">
+          <Link href={`${paths.admin.notificacoes}/nova`}>
             <Plus className="mr-2 h-4 w-4" /> Nova Notificação
           </Link>
         </Button>

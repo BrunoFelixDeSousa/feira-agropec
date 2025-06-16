@@ -2,17 +2,18 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { Eye, EyeOff, Lock, Mail } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Eye, EyeOff, Lock, Mail } from "lucide-react"
+import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { login } from "@/lib/auth"
+import { paths } from "@/lib/paths"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -43,7 +44,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-muted/40 p-4">
-      <Link href="/" className="absolute top-4 left-4 text-sm text-muted-foreground hover:text-foreground">
+      <Link href={`${paths.site.home}`} className="absolute top-4 left-4 text-sm text-muted-foreground hover:text-foreground">
         ← Voltar ao site
       </Link>
 

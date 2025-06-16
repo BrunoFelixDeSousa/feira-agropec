@@ -79,7 +79,7 @@ export default function AdminLayout({
           {/* Botão de menu para mobile */}
           <SidebarTrigger className="md:hidden" />
           <div className="flex items-center gap-3">
-            <Link href="/admin" className="flex items-center gap-2">
+            <Link href={paths.admin.root} className="flex items-center gap-2">
               <Image src="/logo-agropec.png?height=32&width=32" alt="Logo" width={32} height={32} className="h-8 w-8" />
               <span className="font-semibold hidden sm:inline-block">Admin Feira Agropecuária</span>
             </Link>
@@ -94,7 +94,7 @@ export default function AdminLayout({
                   <span className="hidden sm:inline-block">Sair</span>
                 </Button>
                 <Button asChild variant="outline" size="sm" className="h-8">
-                  <Link href="/">Visualizar Site</Link>
+                  <Link href={paths.site.home}>Visualizar Site</Link>
                 </Button>
               </div>
             )}

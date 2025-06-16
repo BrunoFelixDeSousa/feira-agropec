@@ -120,7 +120,7 @@ export default function AdminDashboard() {
         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
         <div className="flex gap-2">
           <Button size="sm" variant="secondary" className="text-muted-foreground hover:text-foreground" asChild>
-            <Link href="/admin/configuracoes">
+            <Link href={paths.admin.configuracoes}>
               <Settings className="h-4 w-4 mr-2" />
               Configurações
             </Link>
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
         </Card>
         <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
           <CardContent className="p-4">
-            <Link href="/admin/eventos" className="flex items-center gap-3">
+            <Link href={`${paths.admin.eventos}/novo`} className="flex items-center gap-3">
               <div className="p-2 bg-blue-500/10 rounded-lg">
                 <CalendarDays className="h-5 w-5 text-blue-500" />
               </div>
@@ -158,7 +158,7 @@ export default function AdminDashboard() {
         </Card>
         <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
           <CardContent className="p-4">
-            <Link href="/admin/notificacoes" className="flex items-center gap-3">
+            <Link href={`${paths.admin.notificacoes}`} className="flex items-center gap-3">
               <div className="p-2 bg-orange-500/10 rounded-lg">
                 <Bell className="h-5 w-5 text-orange-500" />
               </div>
@@ -171,7 +171,7 @@ export default function AdminDashboard() {
         </Card>
         <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
           <CardContent className="p-4">
-            <Link href="/admin/mapa" className="flex items-center gap-3">
+            <Link href={`${paths.admin.mapa}`}className="flex items-center gap-3">
               <div className="p-2 bg-green-500/10 rounded-lg">
                 <MapPin className="h-5 w-5 text-green-500" />
               </div>

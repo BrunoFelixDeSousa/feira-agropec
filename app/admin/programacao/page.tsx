@@ -1,16 +1,40 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+"use client"
+
 import { EventDataTable } from "@/components/admin/event-data-table"
-import { Plus, Calendar, FileDown } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { mockEvents } from "@/lib/mock-data"
+import { paths } from "@/lib/paths"
+import { Event } from "@/lib/types"
+import { Calendar, FileDown, Plus } from "lucide-react"
+import Link from "next/link"
+import { useEffect, useState } from "react"
 
 export default function EventsPage() {
+
+  const [events, setEvents] = useState<Event[]>();
+
+  // Buscar eventos do banco de dados quando o componente montar
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        const res = await fetch("/api/events");
+        const { success, data: events } = await res.json();
+        if (events && success) {
+          setEvents(events);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar eventos:", error);
+      }
+    }
+
+    fetchEvents();
+  }, [])
+
   // Calcular estatísticas de eventos
-  const totalEvents = mockEvents.length
-  const upcomingEvents = mockEvents.filter((event) => new Date(event.date) >= new Date()).length
-  const featuredEvents = mockEvents.filter((event) => event.featured).length
+  const totalEvents = events?.length || 0
+  const upcomingEvents = events?.filter((event) => new Date(event.date) >= new Date()).length || 0
+  const featuredEvents = events?.filter((event) => event.featured).length || 0
 
   return (
     <div className="space-y-6">
@@ -25,13 +49,14 @@ export default function EventsPage() {
             Exportar
           </Button>
           <Button asChild>
-            <Link href="/admin/eventos/novo">
+            <Link href={`${paths.admin.eventos}/novo`}>
               <Plus className="mr-2 h-4 w-4" /> Novo Evento
             </Link>
           </Button>
         </div>
       </div>
 
+      {/* Cards */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
