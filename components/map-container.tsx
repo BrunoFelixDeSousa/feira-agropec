@@ -244,9 +244,9 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
                 key={exhibitor.id}
                 className={`absolute ${getMarkerColor(exhibitor.category)} text-white rounded-full w-4 h-4 flex items-center justify-center cursor-pointer hover:scale-110 transition-all shadow-lg`}
                 style={{
-                  left: `${pos.x - 11}px`, // Ajuste preciso: subtraindo metade da largura (40px/2 = 20px)
-                  top: `${pos.y - 55}px`,  // Ajuste preciso: subtraindo metade da altura (40px/2 = 20px)
-                  transform: "none", // Removendo transform para evitar conflitos
+                  left: `${pos.x - 8}px`, // Metade da largura do marcador (16px/2 = 8px)
+                  top: `${pos.y - 24}px`,  // Metade da altura do marcador (16px/2 = 8px)
+                  transform: "none",
                 }}
                 onClick={() => handleExhibitorClick(exhibitor.id)}
                 onMouseEnter={() => {
@@ -262,7 +262,7 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
                     alt="Marcador"
                     width={16}
                     height={16}
-                    className="w-4 h-4"
+                    className="w-4 h-4 rounded-full"
                   />
                 ) : (
                   <span className="font-normal text-[8px]">{exhibitor.name.slice(0, 2)}</span>
@@ -276,9 +276,9 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
             <div
               className="absolute bg-white p-2 rounded shadow-lg z-10 w-48 pointer-events-none"
               style={{
-                left: `${showTooltip.x - 96}px`, // Ajuste preciso: 48*2 = 96px (metade da largura w-48)
-                top: `${showTooltip.y - 90}px`, // Posicionando acima do marcador ajustado
-                transform: "none", // Removendo transform para evitar conflitos
+                left: `${showTooltip.x - 96}px`, // Centralizando o tooltip (w-48 = 192px, 192px/2 = 96px)
+                top: `${showTooltip.y - 40}px`, // Posicionando acima do marcador (16px + 24px de margem = 40px)
+                transform: "none",
               }}
             >
               <div className="text-sm font-bold truncate">
