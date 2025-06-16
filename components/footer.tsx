@@ -1,6 +1,7 @@
 "use client"
 
 import { useMobile } from "@/hooks/use-mobile"
+import { paths } from "@/lib/paths"
 import { Facebook, Instagram, Twitter } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -20,7 +21,7 @@ function FooterCopyright() {
   return (
     <div className="mt-0 mb-20 pt-2 px-2 border-t text-center text-sm text-muted-foreground flex justify-between items-center">
       <p>&copy; {new Date().getFullYear()} Feira Agropecuária de Paragominas</p>
-      <Link href="/admin" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+      <Link href={paths.admin.root} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
         Área Administrativa
       </Link>
     </div>
@@ -56,7 +57,7 @@ export default function Footer() {
       {isMobile ? <FooterCopyright /> : (
         <footer className="w-full border-t bg-background">
           <div className="container py-10">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-2">
               <div>
                 <h3 className="text-lg font-semibold mb-4">
                   {isLoading ? "Carregando..." : settings?.siteName || "Feira AGROPEC"}
@@ -91,27 +92,27 @@ export default function Footer() {
                 <h3 className="text-lg font-semibold mb-4">Links Rápidos</h3>
                 <ul className="space-y-2 text-sm">
                   <li>
-                    <Link href="/" className="text-muted-foreground hover:text-foreground">
+                    <Link href={paths.site.home} className="text-muted-foreground hover:text-foreground">
                       Início
                     </Link>
                   </li>
                   <li>
-                    <Link href="/mapa" className="text-muted-foreground hover:text-foreground">
+                    <Link href={paths.site.mapa} className="text-muted-foreground hover:text-foreground">
                       Mapa Interativo
                     </Link>
                   </li>
                   <li>
-                    <Link href="/programacao" className="text-muted-foreground hover:text-foreground">
+                    <Link href={paths.site.programacao} className="text-muted-foreground hover:text-foreground">
                       Programação
                     </Link>
                   </li>
                   <li>
-                    <Link href="/expositores" className="text-muted-foreground hover:text-foreground">
+                    <Link href={paths.site.expositores} className="text-muted-foreground hover:text-foreground">
                       Expositores
                     </Link>
                   </li>
                   <li>
-                    <Link href="/notificacoes" className="text-muted-foreground hover:text-foreground">
+                    <Link href={paths.site.notificacoes} className="text-muted-foreground hover:text-foreground">
                       Notificações
                     </Link>
                   </li>
