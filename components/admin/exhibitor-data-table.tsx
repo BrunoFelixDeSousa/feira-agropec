@@ -13,8 +13,18 @@ import {
 } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal, Pencil, Trash } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -26,8 +36,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { toast } from "@/hooks/use-toast"
 
-import { mockExhibitors } from "@/lib/mock-data"
 import type { Exhibitor } from "@/lib/types"
 
 const columns: ColumnDef<Exhibitor>[] = [
@@ -58,45 +68,142 @@ const columns: ColumnDef<Exhibitor>[] = [
     header: "Estande",
     cell: ({ row }) => <div>{row.original.booth}</div>,
   },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const exhibitor = row.original
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Abrir menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href={`/admin/expositores/${exhibitor.id}`}>
-                <Pencil className="mr-2 h-4 w-4" />
-                Editar
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive">
-              <Trash className="mr-2 h-4 w-4" />
-              Excluir
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
-  },
 ]
 
 export function ExhibitorDataTable() {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [exhibitors, setExhibitors] = useState<Exhibitor[]>([])
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [exhibitorToDelete, setExhibitorToDelete] = useState<Exhibitor | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  // Função para abrir o diálogo de confirmação
+  const openDeleteDialog = (exhibitor: Exhibitor) => {
+    setExhibitorToDelete(exhibitor);
+    setShowDeleteDialog(true);
+  };
+
+  // Definir colunas dentro do componente para ter acesso às funções
+  const columns: ColumnDef<Exhibitor>[] = [
+    {
+      accessorKey: "name",
+      header: ({ column }) => {
+        return (
+          <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+            Nome
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div>{row.getValue("name")}</div>,
+    },
+    {
+      accessorKey: "category",
+      header: "Categoria",
+      cell: ({ row }) => <div>{row.getValue("category")}</div>,
+    },
+    {
+      accessorKey: "location.area",
+      header: "Área",
+      cell: ({ row }) => <div>{row.original.location}</div>,
+    },
+    {
+      accessorKey: "location.stand",
+      header: "Estande",
+      cell: ({ row }) => <div>{row.original.booth}</div>,
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const exhibitor = row.original
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Abrir menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href={`/admin/expositores/${exhibitor.id}`}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Editar
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                className="text-destructive"
+                onClick={() => openDeleteDialog(exhibitor)}
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                Excluir
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
+    },
+  ]
+
+  // Buscar expositores do banco de dados quando o componente montar
+  useEffect(() => {
+    async function fetchExhibitors() {
+      try {
+        const res = await fetch("/api/exhibitors");
+        const { success, data: exhibitors } = await res.json();
+
+        if (success) {
+          setExhibitors(exhibitors);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar expositores:", error);
+      }
+    }
+
+    fetchExhibitors();
+  }, []);
+
+  // Função para excluir expositor
+  const handleDeleteExhibitor = async () => {
+    if (!exhibitorToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/exhibitors/${exhibitorToDelete.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao excluir expositor');
+      }
+
+      // Remover o expositor da lista local
+      setExhibitors(prev => prev.filter(e => e.id !== exhibitorToDelete.id));
+      
+      toast({
+        title: "Expositor excluído",
+        description: "O expositor foi excluído com sucesso.",
+      });
+    } catch (error) {
+      console.error('Erro ao excluir expositor:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir o expositor. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteDialog(false);
+      setExhibitorToDelete(null);
+    }
+  };
 
   const table = useReactTable({
-    data: mockExhibitors,
+    data: exhibitors,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -162,6 +269,29 @@ export function ExhibitorDataTable() {
           Próximo
         </Button>
       </div>
+
+      {/* Diálogo de confirmação de exclusão */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir o expositor <strong>{exhibitorToDelete?.name}</strong>?
+              Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteExhibitor}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? "Excluindo..." : "Excluir"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

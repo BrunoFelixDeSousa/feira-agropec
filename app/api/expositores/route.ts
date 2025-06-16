@@ -3,36 +3,40 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const exhibitors = await getAllExhibitors();
+    const exhibitors = await getAllExhibitors("desc");
     return NextResponse.json({ success: true, data: exhibitors });
   } catch (error) {
-    return NextResponse.json({ success: false, error: "Falha ao buscar expositores" }, { status: 500 });
+    console.error("Erro ao buscar expositores:", error);
+    return NextResponse.json(
+      { success: false, error: "Falha ao buscar expositores" },
+      { status: 500 }
+    );
+    
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest) { 
   try {
-    const body = await request.json()
-    const { 
-      name, 
-      description, 
-      category, 
+    const body = await request.json();
+    const {
+      name,
+      description,
+      category,
       location,
       booth,
-      website, 
-      phone, 
-      email, 
-      logo, 
+      logo,
+      website,
+      phone,
+      email,
       featured,
-      mapPosition 
-    } = body
-
-    // Validação básica
-    if (!name || !description || !category || !location || !booth) {
+      mapPosition
+    } = body;
+    
+    if (!name || !description || !category) {
       return NextResponse.json(
-        { success: false, error: 'Nome, descrição, categoria, localização e estande são obrigatórios' },
+        { error: 'Nome, descrição e categoria são obrigatórios' },
         { status: 400 }
-      )
+      );
     }
 
     const exhibitor = await createExhibitor({
@@ -41,15 +45,15 @@ export async function POST(request: NextRequest) {
       category,
       location,
       booth,
+      logo: logo || null,
       website: website || null,
       phone: phone || null,
       email: email || null,
-      logo: logo || null,
       featured: featured || false,
-      mapPosition: mapPosition || null,
-    })
+      mapPosition: mapPosition || null
+    });
 
-    return NextResponse.json({ success: true, data: exhibitor }, { status: 201 })
+    return NextResponse.json({ success: true, data: exhibitor }, { status: 201 });
   } catch (error) {
     console.error('Erro ao criar expositor:', error)
     return NextResponse.json(

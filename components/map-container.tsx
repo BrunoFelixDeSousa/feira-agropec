@@ -194,7 +194,7 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
         className="absolute cursor-grab active:cursor-grabbing"
         style={{
           transform: `translate(${position.x}px, ${position.y}px) scale(${zoomLevel})`,
-          transformOrigin: "center",
+          transformOrigin: "0 0", // Mudado para origem no canto superior esquerdo
           transition: isDragging ? "none" : "transform 0.2s ease-out",
         }}
         onMouseDown={handleMouseDown}
@@ -207,11 +207,11 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
       >
         <div className="relative" style={{ width: mapDimensions.width, height: mapDimensions.height }}>
           <Image
-            src="/mapa.jpg?height=800&width=1000"
+            src="/mapa.jpg"
             alt="Mapa da Feira"
             width={mapDimensions.width}
             height={mapDimensions.height}
-            className="object-contain"
+            className="w-full h-auto"
             onLoad={handleMapLoad}
             priority
           />
@@ -237,14 +237,16 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
           {/* Marcadores dos estandes */}
           {filteredExhibitors.map((exhibitor) => {
             const pos = exhibitor.mapPosition as mapPosition | null;
+            if (!pos) return null;
+            
             return (
               <div
                 key={exhibitor.id}
-                className={`absolute ${getMarkerColor(exhibitor.category)} text-white rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:scale-110 transition-all shadow-lg`}
+                className={`absolute ${getMarkerColor(exhibitor.category)} text-white rounded-full w-4 h-4 flex items-center justify-center cursor-pointer hover:scale-110 transition-all shadow-lg`}
                 style={{
-                  left: pos ? `${pos.x}px` : undefined,
-                  top: pos ? `${pos.y}px` : undefined,
-                  transform: "translate(-50%, -50%)",
+                  left: `${pos.x - 11}px`, // Ajuste preciso: subtraindo metade da largura (40px/2 = 20px)
+                  top: `${pos.y - 55}px`,  // Ajuste preciso: subtraindo metade da altura (40px/2 = 20px)
+                  transform: "none", // Removendo transform para evitar conflitos
                 }}
                 onClick={() => handleExhibitorClick(exhibitor.id)}
                 onMouseEnter={() => {
@@ -254,7 +256,17 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
                 }}
                 onMouseLeave={() => setShowTooltip(null)}
               >
-                <span className="font-medium">{exhibitor.name}</span>
+                {exhibitor.logo ? (
+                  <Image
+                    src={exhibitor.logo}
+                    alt="Marcador"
+                    width={16}
+                    height={16}
+                    className="w-4 h-4"
+                  />
+                ) : (
+                  <span className="font-normal text-[8px]">{exhibitor.name.slice(0, 2)}</span>
+                )}
               </div>
             );
           })}
@@ -264,9 +276,9 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
             <div
               className="absolute bg-white p-2 rounded shadow-lg z-10 w-48 pointer-events-none"
               style={{
-                left: `${showTooltip.x}px`,
-                top: `${showTooltip.y - 70}px`,
-                transform: "translate(-50%, -100%)",
+                left: `${showTooltip.x - 96}px`, // Ajuste preciso: 48*2 = 96px (metade da largura w-48)
+                top: `${showTooltip.y - 90}px`, // Posicionando acima do marcador ajustado
+                transform: "none", // Removendo transform para evitar conflitos
               }}
             >
               <div className="text-sm font-bold truncate">
@@ -283,9 +295,9 @@ export function MapContainer({ zoomLevel, onSelectExhibitor, filter, userLocatio
             <div
               className="absolute bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center animate-pulse"
               style={{
-                left: `${userLocation.x}px`,
-                top: `${userLocation.y}px`,
-                transform: "translate(-50%, -50%)",
+                left: `${userLocation.x - 12}px`, // Ajuste preciso: subtraindo metade da largura (24px/2 = 12px)
+                top: `${userLocation.y - 12}px`,  // Ajuste preciso: subtraindo metade da altura (24px/2 = 12px)
+                transform: "none", // Removendo transform para evitar conflitos
                 boxShadow: "0 0 0 8px rgba(37, 99, 235, 0.2)",
               }}
             >

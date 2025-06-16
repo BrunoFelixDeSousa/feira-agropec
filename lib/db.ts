@@ -47,9 +47,9 @@ export async function getFeaturedEvents() {
 }
 
 // Funções para Exhibitors
-export async function getAllExhibitors() {
+export async function getAllExhibitors(orderBy?: "asc" | "desc") {
   return prisma.exhibitor.findMany({
-    orderBy: { name: "asc" },
+    orderBy: { name: orderBy || "asc" },
   })
 }
 

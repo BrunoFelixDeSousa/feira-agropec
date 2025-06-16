@@ -1,5 +1,5 @@
 import { ExhibitorForm } from "@/components/admin/exhibitor-form"
-import { mockExhibitors } from "@/lib/mock-data"
+import { getExhibitorById } from "@/lib/db"
 import { notFound } from "next/navigation"
 
 export default async function EditExhibitorPage({ params }: { params: Promise<{ id: string }> }) {
@@ -15,17 +15,22 @@ export default async function EditExhibitorPage({ params }: { params: Promise<{ 
     )
   }
 
-  // Caso contrário, buscamos o expositor pelo ID
-  const exhibitor = mockExhibitors.find((e) => e.id === id)
+  // Caso contrário, buscamos o expositor pelo ID diretamente do banco
+  try {
+    const exhibitor = await getExhibitorById(id)
 
-  if (!exhibitor) {
+    if (!exhibitor) {
+      notFound()
+    }
+
+    return (
+      <div className="space-y-4">
+        <h2 className="text-3xl font-bold tracking-tight">Editar Expositor</h2>
+        <ExhibitorForm defaultValues={exhibitor} exhibitorId={id} />
+      </div>
+    )
+  } catch (error) {
+    console.error("Erro ao buscar expositor:", error)
     notFound()
   }
-
-  return (
-    <div className="space-y-4">
-      <h2 className="text-3xl font-bold tracking-tight">Editar Expositor</h2>
-      <ExhibitorForm defaultValues={exhibitor} />
-    </div>
-  )
 }

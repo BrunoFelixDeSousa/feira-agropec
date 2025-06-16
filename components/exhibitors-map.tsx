@@ -250,31 +250,36 @@ export function ExhibitorsMap({ exhibitors }: ExhibitorsMapProps) {
             </div>
 
             {/* Marcadores dos estandes */}
-            {exhibitors.map((exhibitor) => (
-              <div
-                key={exhibitor.id}
-                className={`absolute ${getMarkerColor(exhibitor.category)} text-white rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:scale-110 transition-all shadow-lg`}
-                style={{
-                  left: `${exhibitor.location.x}px`,
-                  top: `${exhibitor.location.y}px`,
-                  transform: "translate(-50%, -50%)",
-                }}
-                onClick={() => handleExhibitorClick(exhibitor.id)}
-                onMouseEnter={() => handleExhibitorHover(exhibitor.id, exhibitor.location.x, exhibitor.location.y)}
-                onMouseLeave={() => setShowTooltip(null)}
-              >
-                <span className="font-bold">{exhibitor.location.stand.split("-")[1]}</span>
-              </div>
-            ))}
+            {exhibitors
+              .filter(exhibitor => exhibitor.mapPosition)
+              .map((exhibitor) => {
+                const pos = exhibitor.mapPosition as any;
+                return (
+                  <div
+                    key={exhibitor.id}
+                    className={`absolute ${getMarkerColor(exhibitor.category)} text-white rounded-full w-10 h-10 flex items-center justify-center cursor-pointer hover:scale-110 transition-all shadow-lg`}
+                    style={{
+                      left: `${pos.x - 20}px`, // Ajuste preciso: subtraindo metade da largura (40px/2 = 20px)
+                      top: `${pos.y - 20}px`,  // Ajuste preciso: subtraindo metade da altura (40px/2 = 20px)
+                      transform: "none", // Removendo transform para evitar conflitos
+                    }}
+                    onClick={() => handleExhibitorClick(exhibitor.id)}
+                    onMouseEnter={() => handleExhibitorHover(exhibitor.id, pos.x, pos.y)}
+                    onMouseLeave={() => setShowTooltip(null)}
+                  >
+                    <span className="font-bold text-xs">{exhibitor.booth}</span>
+                  </div>
+                );
+              })}
 
             {/* Tooltip ao passar o mouse */}
             {showTooltip && (
               <div
                 className="absolute bg-white p-2 rounded shadow-lg z-10 w-48 pointer-events-none"
                 style={{
-                  left: `${showTooltip.x}px`,
-                  top: `${showTooltip.y - 70}px`,
-                  transform: "translate(-50%, -100%)",
+                  left: `${showTooltip.x - 96}px`, // Ajuste preciso: 48*2 = 96px (metade da largura w-48)
+                  top: `${showTooltip.y - 90}px`, // Posicionando acima do marcador ajustado
+                  transform: "none", // Removendo transform para evitar conflitos
                 }}
               >
                 <div className="text-sm font-bold truncate">
@@ -291,9 +296,9 @@ export function ExhibitorsMap({ exhibitors }: ExhibitorsMapProps) {
               <div
                 className="absolute bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center animate-pulse"
                 style={{
-                  left: `${userLocation.x}px`,
-                  top: `${userLocation.y}px`,
-                  transform: "translate(-50%, -50%)",
+                  left: `${userLocation.x - 12}px`, // Ajuste preciso: subtraindo metade da largura (24px/2 = 12px)
+                  top: `${userLocation.y - 12}px`,  // Ajuste preciso: subtraindo metade da altura (24px/2 = 12px)
+                  transform: "none", // Removendo transform para evitar conflitos
                   boxShadow: "0 0 0 8px rgba(37, 99, 235, 0.2)",
                 }}
               >
@@ -329,7 +334,7 @@ export function ExhibitorsMap({ exhibitors }: ExhibitorsMapProps) {
           <SheetHeader className="text-left">
             <SheetTitle>Detalhes do Expositor</SheetTitle>
           </SheetHeader>
-          <ExhibitorInfo exhibitorId={selectedExhibitor} />
+          {selectedExhibitor && <ExhibitorInfo exhibitorId={selectedExhibitor} />}
         </SheetContent>
       </Sheet>
     </>
