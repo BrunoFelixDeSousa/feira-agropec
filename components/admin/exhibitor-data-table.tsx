@@ -77,6 +77,7 @@ export function ExhibitorDataTable() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [exhibitorToDelete, setExhibitorToDelete] = useState<Exhibitor | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   // Função para abrir o diálogo de confirmação
   const openDeleteDialog = (exhibitor: Exhibitor) => {
@@ -153,6 +154,7 @@ export function ExhibitorDataTable() {
   useEffect(() => {
     async function fetchExhibitors() {
       try {
+        setIsLoading(true)
         const res = await fetch("/api/exhibitors");
         const { success, data: exhibitors } = await res.json();
 
@@ -161,6 +163,8 @@ export function ExhibitorDataTable() {
         }
       } catch (error) {
         console.error("Erro ao carregar expositores:", error);
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -243,7 +247,16 @@ export function ExhibitorDataTable() {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                    <span className="ml-2">Carregando expositores...</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
@@ -254,7 +267,7 @@ export function ExhibitorDataTable() {
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Nenhum resultado.
+                  {exhibitors.length === 0 ? "Nenhum expositor cadastrado." : "Nenhum expositor encontrado com os filtros aplicados."}
                 </TableCell>
               </TableRow>
             )}

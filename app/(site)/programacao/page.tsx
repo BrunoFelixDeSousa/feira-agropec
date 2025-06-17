@@ -24,7 +24,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMobile } from "@/hooks/use-mobile";
 import { useFavoritesContext } from "@/lib/favorites";
 import { Event } from "@/lib/types";
-import { parseEventDate } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Calendar, ChevronDown, ChevronUp, Clock, ListFilter, Search, Star, StarOff, X } from "lucide-react";
 import { useEffect, useState } from "react";
