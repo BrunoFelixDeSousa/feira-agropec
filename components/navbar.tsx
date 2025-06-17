@@ -84,19 +84,24 @@ export default function Navbar() {
                 key={route.href}
                 href={route.href}
                 className={cn(
-                  "px-3 py-2 rounded-md text-sm font-medium transition-colors relative",
+                  "px-3 py-2 rounded-md text-sm font-medium transition-colors relative group",
                   pathname === route.href
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-primary hover:bg-primary/5",
+                    ? "text-green-600 bg-green-500/10 font-medium"
+                    : "text-muted-foreground hover:text-green-600 hover:bg-green-500/10 hover:font-medium",
                 )}
               >
                 <div className="flex items-center gap-2">
-                  <route.icon className="h-4 w-4" />
+                  <route.icon className={cn(
+                    "h-4 w-4 transition-transform duration-200",
+                    pathname === route.href 
+                      ? "text-green-600" 
+                      : "group-hover:scale-110 group-hover:text-green-600"
+                  )} />
                   {route.label}
                 </div>
                 {pathname === route.href && (
                   <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-600"
                     layoutId="navbar-indicator-desktop"
                     transition={{ type: "spring", duration: 0.5 }}
                   />
@@ -128,14 +133,19 @@ export default function Navbar() {
                         key={route.href}
                         href={route.href}
                         className={cn(
-                          "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                          "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors group",
                           pathname === route.href
-                            ? "bg-primary/10 text-primary"
-                            : "text-muted-foreground hover:text-primary hover:bg-primary/5",
+                            ? "bg-green-500/10 text-green-600 font-medium"
+                            : "text-muted-foreground hover:text-green-600 hover:bg-green-500/10 hover:font-medium",
                         )}
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        <route.icon className="h-5 w-5" />
+                        <route.icon className={cn(
+                          "h-5 w-5 transition-transform duration-200",
+                          pathname === route.href
+                            ? "text-green-600"
+                            : "group-hover:scale-110 group-hover:text-green-600"
+                        )} />
                         {route.label}
                       </Link>
                     ))}
@@ -158,18 +168,25 @@ export default function Navbar() {
               key={route.href}
               href={route.href}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 text-xs font-medium relative",
-                pathname === route.href ? "text-primary" : "text-muted-foreground hover:text-primary",
+                "flex flex-col items-center justify-center gap-1 text-xs font-medium relative group transition-colors duration-200",
+                pathname === route.href 
+                  ? "text-green-600" 
+                  : "text-muted-foreground hover:text-green-600",
               )}
             >
               {pathname === route.href && (
                 <motion.span
-                  className="absolute inset-x-0 -top-[13px] mx-auto h-1 w-12 bg-primary rounded-full"
+                  className="absolute inset-x-0 -top-[13px] mx-auto h-1 w-12 bg-green-600 rounded-full"
                   layoutId="navbar-indicator"
                   transition={{ type: "spring", duration: 0.5 }}
                 />
               )}
-              <route.icon className="h-5 w-5" />
+              <route.icon className={cn(
+                "h-5 w-5 transition-transform duration-200",
+                pathname === route.href
+                  ? ""
+                  : "group-hover:scale-110 group-hover:text-green-600"
+              )} />
               {route.label}
             </Link>
           ))}
