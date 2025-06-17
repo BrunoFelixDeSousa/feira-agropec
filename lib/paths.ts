@@ -9,6 +9,7 @@ export const paths = {
     carousel: "/admin/carousel",
     configuracoes: "/admin/configuracoes",
     login: "/admin/login",
+    perfil: "/admin/perfil",
   },
   site: {
     home: "/",
