@@ -213,12 +213,12 @@ export default function ExpositorDetalhePage({ params }: { params: Promise<{ id:
               <CardTitle className="text-lg">Ações</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button className="w-full" asChild>
+              {/* <Button className="w-full" asChild>
                 <Link href="/mapa">
                   <MapPin className="h-4 w-4 mr-2" />
                   Ver no Mapa
                 </Link>
-              </Button>
+              </Button> */}
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/expositores">
                   <Users className="h-4 w-4 mr-2" />

@@ -2,18 +2,25 @@
 
 import type React from "react"
 
-import { LogOut } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
+import { LogoutButton } from "@/components/admin/logout-button"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { getSession, isAuthenticated, logout } from "@/lib/auth"
+import { getSession } from "@/lib/auth-actions"
 import { paths } from "@/lib/paths"
+
+type SessionType = {
+  userId: string
+  email: string
+  name: string
+  role: string
+} | null
 
 export default function AdminLayout({
   children,
@@ -23,24 +30,33 @@ export default function AdminLayout({
   const router = useRouter()
   const pathname = usePathname()
   const [isLoading, setIsLoading] = useState(true)
-  const [session, setSession] = useState<ReturnType<typeof getSession> | null>(null)
+  const [session, setSession] = useState<SessionType>(null)
 
   useEffect(() => {
-    // Não redirecionar se já estiver na página de login
-    if (pathname === paths.admin.login) {
+    async function checkAuth() {
+      // Não redirecionar se já estiver na página de login
+      if (pathname === paths.admin.login) {
+        setIsLoading(false)
+        return
+      }
+
+      try {
+        // Verificar autenticação usando server action
+        const userSession = await getSession()
+        setSession(userSession)
+
+        if (!userSession) {
+          router.push(paths.admin.login)
+        }
+      } catch (error) {
+        console.error("Erro ao verificar sessão:", error)
+        router.push(paths.admin.login)
+      }
+
       setIsLoading(false)
-      return
     }
 
-    // Verificar autenticação
-    const userSession = getSession()
-    setSession(userSession)
-
-    if (!isAuthenticated()) {
-      router.push(paths.admin.login)
-    }
-
-    setIsLoading(false)
+    checkAuth()
   }, [router, pathname])
 
   // Se estiver na página de login, renderizar diretamente o conteúdo
@@ -88,11 +104,8 @@ export default function AdminLayout({
           <div className="ml-auto flex items-center gap-2">
             {session && (
               <div className="flex items-center gap-3">
-                <span className="text-sm text-muted-foreground hidden sm:inline-block">{session.user.name}</span>
-                <Button variant="ghost" size="sm" onClick={logout} className="h-8 gap-1 px-2">
-                  <LogOut size={16} />
-                  <span className="hidden sm:inline-block">Sair</span>
-                </Button>
+                <span className="text-sm text-muted-foreground hidden sm:inline-block">{session.name}</span>
+                <LogoutButton />
                 <Button asChild variant="outline" size="sm" className="h-8">
                   <Link href={paths.site.home}>Visualizar Site</Link>
                 </Button>

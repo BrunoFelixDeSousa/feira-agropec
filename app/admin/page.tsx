@@ -81,7 +81,7 @@ async function StatsCards() {
   const stats = await getStats()
   
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total de Expositores</CardTitle>
@@ -129,7 +129,7 @@ export default function AdminDashboard() {
       </div>
       
       {/* Ações Rápidas */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
           <CardContent className="p-4">
             <Link href={`${paths.admin.expositores}/novo`} className="flex items-center gap-3">
@@ -169,7 +169,7 @@ export default function AdminDashboard() {
             </Link>
           </CardContent>
         </Card>
-        <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+        {/* <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
           <CardContent className="p-4">
             <Link href={`${paths.admin.mapa}`}className="flex items-center gap-3">
               <div className="p-2 bg-green-500/10 rounded-lg">
@@ -181,7 +181,7 @@ export default function AdminDashboard() {
               </div>
             </Link>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
       
       {/* Estatísticas */}

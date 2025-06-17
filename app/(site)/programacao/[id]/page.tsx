@@ -227,12 +227,12 @@ export default function EventPage({ params }: EventPageProps) {
                 <Bell className="h-4 w-4 mr-2" />
                 Definir Lembrete
               </Button>
-              <Button variant="outline" className="w-full" asChild>
+              {/* <Button variant="outline" className="w-full" asChild>
                 <Link href="/mapa">
                   <MapPin className="h-4 w-4 mr-2" />
                   Ver no Mapa
                 </Link>
-              </Button>
+              </Button> */}
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/programacao">
                   <Calendar className="h-4 w-4 mr-2" />

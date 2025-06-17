@@ -1,13 +1,13 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Calendar, Clock, MapPin, Share2, Bell, CalendarIcon } from "lucide-react"
-import type { Event } from "@/lib/types"
 import { FavoriteButton } from "@/components/favorite-button"
-import { useState } from "react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
+import type { Event } from "@/lib/types"
+import { Calendar, CalendarIcon, Clock, MapPin, Share2 } from "lucide-react"
+import { useState } from "react"
 
 interface EventDetailsDialogProps {
   event: Event
@@ -142,10 +142,10 @@ export function EventDetailsDialog({ event, open, onOpenChange }: EventDetailsDi
         </div>
 
         <DialogFooter className="flex-col sm:flex-row gap-2">
-          <Button variant="outline" size="sm" className="gap-2" onClick={handleSetReminder}>
+          {/* <Button variant="outline" size="sm" className="gap-2" onClick={handleSetReminder}>
             <Bell className="h-4 w-4" />
             {isReminderSet ? "Remover lembrete" : "Definir lembrete"}
-          </Button>
+          </Button> */}
 
           <Button variant="outline" size="sm" className="gap-2" onClick={handleAddToCalendar}>
             <CalendarIcon className="h-4 w-4" />

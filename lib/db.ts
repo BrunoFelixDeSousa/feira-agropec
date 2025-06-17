@@ -130,17 +130,55 @@ export async function markNotificationAsRead(id: string) {
   })
 }
 
-// Funções para Users
-export async function getUserByEmail(email: string) {
-  return prisma.user.findUnique({
-    where: { email },
-  })
+// Funções completas para Users
+export async function getUserByEmail(email: string): Promise<User | null> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+    
+    return user;
+  } catch (error) {
+    console.error("❌ Erro ao buscar usuário por email:", error);
+    return null;
+  }
 }
 
-export async function createUser(data: Omit<User, "id" | "createdAt" | "updatedAt">) {
-  return prisma.user.create({
-    data,
-  })
+export async function getUserById(id: string): Promise<User | null> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+    return user;
+  } catch (error) {
+    console.error("❌ Erro ao buscar usuário por ID:", error);
+    return null;
+  }
+}
+
+export async function createUser(data: Omit<User, "id" | "createdAt" | "updatedAt">): Promise<User | null> {
+  try {
+    const user = await prisma.user.create({
+      data,
+    });
+    return user;
+  } catch (error) {
+    console.error("❌ Erro ao criar usuário:", error);
+    return null;
+  }
+}
+
+export async function updateUser(id: string, data: Partial<Omit<User, "id" | "createdAt" | "updatedAt">>): Promise<User | null> {
+  try {
+    const user = await prisma.user.update({
+      where: { id },
+      data,
+    });
+    return user;
+  } catch (error) {
+    console.error("❌ Erro ao atualizar usuário:", error);
+    return null;
+  }
 }
 
 // Funções para CarouselSlides

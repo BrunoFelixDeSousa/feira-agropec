@@ -1,6 +1,6 @@
 "use client"
 
-import { Bell, CalendarDays, Home, ImageIcon, LayoutDashboard, Map, Settings, Users } from "lucide-react"
+import { Bell, CalendarDays, Home, ImageIcon, LayoutDashboard, Settings, Users } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -63,14 +63,14 @@ export function AdminSidebar() {
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          <SidebarMenuItem>
+          {/* <SidebarMenuItem>
             <SidebarMenuButton asChild isActive={isActive(paths.admin.mapa)}>
               <Link href={paths.admin.mapa}>
                 <Map className="h-4 w-4" />
                 <span>Mapa</span>
               </Link>
             </SidebarMenuButton>
-          </SidebarMenuItem>
+          </SidebarMenuItem> */}
           <SidebarMenuItem>
             <SidebarMenuButton asChild isActive={isActive(paths.admin.carousel)}>
               <Link href={paths.admin.carousel}>
