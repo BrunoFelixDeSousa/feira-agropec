@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { paths } from "@/lib/paths"
 import { Event } from "@/lib/types"
-import { Calendar, FileDown, Plus } from "lucide-react"
+import { Calendar, Plus } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
@@ -44,10 +44,6 @@ export default function EventsPage() {
           <p className="text-muted-foreground mt-1">Gerencie todos os eventos da feira agropecuária</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
-          <Button variant="outline" size="sm">
-            <FileDown className="mr-2 h-4 w-4" />
-            Exportar
-          </Button>
           <Button asChild>
             <Link href={`${paths.admin.eventos}/novo`}>
               <Plus className="mr-2 h-4 w-4" /> Novo Evento
