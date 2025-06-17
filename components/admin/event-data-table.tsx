@@ -1,28 +1,21 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
+import { deleteEventAction } from "@/app/admin/programacao/actions"
 import {
   type ColumnDef,
+  type ColumnFiltersState,
   flexRender,
   getCoreRowModel,
-  useReactTable,
-  getPaginationRowModel,
-  type SortingState,
-  getSortedRowModel,
-  type ColumnFiltersState,
   getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  type SortingState,
+  useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Pencil, Trash, Calendar, MapPin, Tag, Star } from "lucide-react"
+import { ArrowUpDown, Calendar, MapPin, Pencil, Star, Tag, Trash } from "lucide-react"
+import Link from "next/link"
+import { useEffect, useState } from "react"
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import type { Event } from "@/lib/types"
-import { mockEvents } from "@/lib/mock-data"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent } from "@/components/ui/card"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,7 +27,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { toast } from "@/hooks/use-toast"
+import type { Event } from "@/lib/types"
 
 interface EventDataTableProps {
   filterType?: "upcoming" | "past" | "featured" | "all"
@@ -45,11 +45,38 @@ export function EventDataTable({ filterType = "all" }: EventDataTableProps) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [data, setData] = useState<Event[]>([])
   const [categoryFilter, setCategoryFilter] = useState<string>("all")
+  const [events, setEvents] = useState<Event[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
+  // Buscar eventos do banco de dados quando o componente montar
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        setIsLoading(true)
+        const res = await fetch("/api/events");
+        const result = await res.json();
+        
+        if (result.success && result.data) {
+          setEvents(result.data);
+        } else {
+        }
+      } catch (error) {
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchEvents();
+  }, [])
+  
   // Filtrar os eventos com base no tipo de filtro
   useEffect(() => {
+    if (events.length === 0) {
+      return;
+    }
+    
     const now = new Date()
-    let filteredEvents = [...mockEvents]
+    let filteredEvents = [...events]
 
     if (filterType === "upcoming") {
       filteredEvents = filteredEvents.filter((event) => new Date(event.date) >= now)
@@ -65,15 +92,25 @@ export function EventDataTable({ filterType = "all" }: EventDataTableProps) {
     }
 
     setData(filteredEvents)
-  }, [filterType, categoryFilter])
+  }, [events, filterType, categoryFilter]) // Adicionar 'events' como dependência
 
-  const handleDeleteEvent = (eventId: string) => {
-    // Simulação de exclusão
-    setData((prev) => prev.filter((event) => event.id !== eventId))
-    toast({
-      title: "Evento excluído",
-      description: "O evento foi excluído com sucesso.",
-    })
+  const handleDeleteEvent = async (eventId: string) => {
+    try {
+      await deleteEventAction(eventId)
+      // Atualizar a lista removendo o evento deletado
+      setEvents((prev) => prev.filter((event) => event.id !== eventId))
+      toast({
+        title: "Evento excluído",
+        description: "O evento foi excluído com sucesso.",
+      })
+    } catch (error) {
+      console.error("Erro ao excluir evento:", error)
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro ao excluir o evento. Tente novamente.",
+        variant: "destructive",
+      })
+    }
   }
 
   const columns: ColumnDef<Event>[] = [
@@ -157,7 +194,7 @@ export function EventDataTable({ filterType = "all" }: EventDataTableProps) {
         return (
           <div className="flex justify-end">
             <Button variant="ghost" size="icon" asChild>
-              <Link href={`/admin/eventos/${event.id}`}>
+              <Link href={`/admin/programacao/${event.id}`}>
                 <Pencil className="h-4 w-4" />
                 <span className="sr-only">Editar</span>
               </Link>
@@ -250,7 +287,16 @@ export function EventDataTable({ filterType = "all" }: EventDataTableProps) {
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length ? (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                      <span className="ml-2">Carregando eventos...</span>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                     {row.getVisibleCells().map((cell) => (
@@ -261,7 +307,7 @@ export function EventDataTable({ filterType = "all" }: EventDataTableProps) {
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center">
-                    Nenhum evento encontrado.
+                    {events.length === 0 ? "Nenhum evento cadastrado." : "Nenhum evento encontrado com os filtros aplicados."}
                   </TableCell>
                 </TableRow>
               )}

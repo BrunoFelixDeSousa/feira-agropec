@@ -24,7 +24,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
-import { paths } from "@/lib/paths"
+import { toast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 
 const formSchema = z.object({
@@ -64,6 +64,7 @@ export function EventForm({ event }: EventFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [previewImage, setPreviewImage] = useState<string>(event?.image || "")
+  const [imageFile, setImageFile] = useState<File | null>(null)
   const [currentTag, setCurrentTag] = useState("")
   const [activeTab, setActiveTab] = useState("informacoes")
 
@@ -102,29 +103,109 @@ export function EventForm({ event }: EventFormProps) {
     )
   }
 
+  // Função para upload de imagem
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      // Verificar tipo de arquivo
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Erro",
+          description: "Por favor, selecione apenas arquivos de imagem.",
+          variant: "destructive",
+        })
+        return
+      }
+
+      // Verificar tamanho (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Erro",
+          description: "A imagem deve ter no máximo 5MB.",
+          variant: "destructive",
+        })
+        return
+      }
+
+      setImageFile(file)
+      
+      // Criar preview
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const result = e.target?.result as string
+        setPreviewImage(result)
+        form.setValue('image', result)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsSubmitting(true)
-    const formData = new FormData()
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === "tags" && Array.isArray(value)) {
-        formData.append(key, value.join(","))
-      } else if (key === "date" && value instanceof Date) {
-        formData.append(key, value.toISOString())
-      } else if (typeof value === "boolean") {
-        if (value) formData.append(key, "on")
-      } else if (value !== undefined && value !== null) {
-        formData.append(key, String(value))
-      }
-    })
+    
     try {
+      const formData = new FormData()
+      
+      // Campos básicos
+      formData.append('title', data.title)
+      formData.append('description', data.description)
+      formData.append('date', data.date.toISOString())
+      formData.append('time', data.time)
+      formData.append('endTime', data.endTime)
+      formData.append('location', data.location)
+      formData.append('type', data.type)
+      formData.append('tags', data.tags.join(','))
+      
+      if (data.featured) {
+        formData.append('featured', 'on')
+      }
+
+      // Imagem - usar o arquivo se foi feito upload, senão usar a URL
+      if (imageFile) {
+        formData.append('imageFile', imageFile)
+      } else if (data.image) {
+        formData.append('image', data.image)
+      }
+
+      // Executar a action
       if (event?.id) {
         await updateEventAction(event.id, formData)
       } else {
         await createEventAction(formData)
       }
-    } catch (error) {
+      
+      // Se chegou até aqui, foi sucesso
+      toast({
+        title: "Sucesso",
+        description: event?.id ? "Evento atualizado com sucesso!" : "Evento criado com sucesso!",
+      })
+      
+      // Aguardar um pouco para o toast aparecer, depois navegar
+      setTimeout(() => {
+        router.push('/admin/programacao')
+      }, 1500)
+      
+    } catch (error: any) {
       console.error("Erro ao salvar evento:", error)
-      setIsSubmitting(false)
+      
+      // Verificar se é um erro de redirect (que na verdade é sucesso)
+      if (error?.message?.includes('NEXT_REDIRECT')) {
+        toast({
+          title: "Sucesso",
+          description: event?.id ? "Evento atualizado com sucesso!" : "Evento criado com sucesso!",
+        })
+        setTimeout(() => {
+          router.push('/admin/programacao')
+        }, 1500)
+      } else {
+        // Erro real
+        toast({
+          title: "Erro",
+          description: "Ocorreu um erro ao salvar o evento. Tente novamente.",
+          variant: "destructive",
+        })
+        setIsSubmitting(false) // Só resetar o loading em caso de erro real
+      }
     }
   }
 
@@ -381,46 +462,95 @@ export function EventForm({ event }: EventFormProps) {
             </TabsContent>
 
             <TabsContent value="imagem" className="space-y-6">
-              <FormField
-                control={form.control}
-                name="image"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>URL da Imagem</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://exemplo.com/imagem.jpg"
-                        {...field}
-                        onChange={(e) => {
-                          field.onChange(e)
-                          setPreviewImage(e.target.value)
+              <div className="space-y-4">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Upload de Imagem</h3>
+                  
+                  {/* Upload de arquivo */}
+                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6">
+                    <div className="flex flex-col items-center gap-4">
+                      <Upload className="h-10 w-10 text-muted-foreground" />
+                      <div className="text-center">
+                        <p className="text-sm font-medium">Escolha uma imagem do seu computador</p>
+                        <p className="text-xs text-muted-foreground">PNG, JPG, WEBP até 5MB</p>
+                      </div>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => document.getElementById('image-upload')?.click()}
+                        >
+                          <Upload className="mr-2 h-4 w-4" />
+                          Selecionar Arquivo
+                        </Button>
+                        <input
+                          id="image-upload"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">Ou</span>
+                    </div>
+                  </div>
+
+                  {/* URL da imagem */}
+                  <FormField
+                    control={form.control}
+                    name="image"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>URL da Imagem</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="https://exemplo.com/imagem.jpg"
+                            {...field}
+                            onChange={(e) => {
+                              field.onChange(e)
+                              setPreviewImage(e.target.value)
+                              setImageFile(null) // Limpar arquivo se URL for inserida
+                            }}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Cole a URL de uma imagem ou faça upload de um arquivo acima
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Preview da imagem */}
+                <div className="border rounded-md p-4">
+                  <h3 className="text-sm font-medium mb-2">Pré-visualização da imagem</h3>
+                  {previewImage ? (
+                    <div className="relative aspect-video overflow-hidden rounded-md border bg-muted">
+                      <img
+                        src={previewImage}
+                        alt="Preview"
+                        className="object-cover w-full h-full"
+                        onError={() => {
+                          setPreviewImage("/placeholder.svg?height=400&width=600")
                         }}
                       />
-                    </FormControl>
-                    <FormDescription>URL da imagem que será exibida no card do evento</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="border rounded-md p-4">
-                <h3 className="text-sm font-medium mb-2">Pré-visualização da imagem</h3>
-                {previewImage ? (
-                  <div className="relative aspect-video overflow-hidden rounded-md border bg-muted">
-                    <img
-                      src={previewImage || "/placeholder.svg"}
-                      alt="Preview"
-                      className="object-cover w-full h-full"
-                      onError={() => {
-                        setPreviewImage("/placeholder.svg?height=400&width=600")
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center aspect-video rounded-md border bg-muted text-muted-foreground">
-                    Nenhuma imagem definida
-                  </div>
-                )}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center aspect-video rounded-md border bg-muted text-muted-foreground">
+                      <Upload className="h-8 w-8 mb-2" />
+                      <p>Nenhuma imagem selecionada</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </TabsContent>
 
@@ -506,13 +636,13 @@ export function EventForm({ event }: EventFormProps) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push(paths.admin.eventos)}
+                onClick={() => router.push('/admin/programacao')}
                 disabled={isSubmitting}
               >
                 Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Salvando..." : "Salvar Evento"}
+                {isSubmitting ? "Salvando..." : event?.id ? "Atualizar Evento" : "Criar Evento"}
               </Button>
             </div>
           </form>
