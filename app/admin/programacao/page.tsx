@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { paths } from "@/lib/paths"
 import { Event } from "@/lib/types"
+import { parseEventDate } from "@/lib/utils"
 import { Calendar, Plus } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -33,7 +34,7 @@ export default function EventsPage() {
 
   // Calcular estatísticas de eventos
   const totalEvents = events?.length || 0
-  const upcomingEvents = events?.filter((event) => new Date(event.date) >= new Date()).length || 0
+  const upcomingEvents = events?.filter((event) => parseEventDate(event.date) >= new Date()).length || 0
   const featuredEvents = events?.filter((event) => event.featured).length || 0
 
   return (

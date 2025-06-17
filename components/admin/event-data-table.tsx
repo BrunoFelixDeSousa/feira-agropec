@@ -35,6 +35,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { toast } from "@/hooks/use-toast"
 import type { Event } from "@/lib/types"
+import { parseEventDate } from "@/lib/utils"
 
 interface EventDataTableProps {
   filterType?: "upcoming" | "past" | "featured" | "all"
@@ -79,9 +80,9 @@ export function EventDataTable({ filterType = "all" }: EventDataTableProps) {
     let filteredEvents = [...events]
 
     if (filterType === "upcoming") {
-      filteredEvents = filteredEvents.filter((event) => new Date(event.date) >= now)
+      filteredEvents = filteredEvents.filter((event) => parseEventDate(event.date) >= now)
     } else if (filterType === "past") {
-      filteredEvents = filteredEvents.filter((event) => new Date(event.date) < now)
+      filteredEvents = filteredEvents.filter((event) => parseEventDate(event.date) < now)
     } else if (filterType === "featured") {
       filteredEvents = filteredEvents.filter((event) => event.featured)
     }
@@ -147,7 +148,8 @@ export function EventDataTable({ filterType = "all" }: EventDataTableProps) {
         )
       },
       cell: ({ row }) => {
-        const date = new Date(row.getValue("date"))
+        const dateString = row.getValue("date") as string
+        const date = parseEventDate(dateString)
         const formattedDate = date.toLocaleDateString("pt-BR", {
           day: "2-digit",
           month: "2-digit",

@@ -24,6 +24,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMobile } from "@/hooks/use-mobile";
 import { useFavoritesContext } from "@/lib/favorites";
 import { Event } from "@/lib/types";
+import { parseEventDate } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Calendar, ChevronDown, ChevronUp, Clock, ListFilter, Search, Star, StarOff, X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -51,7 +52,12 @@ export default function ProgramacaoPage() {
         const res = await fetch("/api/events");
         const { success, data: events } = await res.json();
         if (events && success) {
-          setEvents(events);
+          // Formatar as datas dos eventos de YYYY-MM-DD para DD/MM/YYYY
+          const formattedEvents = events.map((event: Event) => ({
+            ...event,
+            date: formatDateToDisplay(event.date)
+          }));
+          setEvents(formattedEvents);
         }
       } catch (error) {
         console.error("Erro ao buscar eventos:", error);
@@ -62,6 +68,20 @@ export default function ProgramacaoPage() {
 
     fetchEvents();
   }, [])
+
+  // Função para formatar data de YYYY-MM-DD para DD/MM/YYYY
+  const formatDateToDisplay = (dateString: string): string => {
+    if (dateString.includes('/')) {
+      return dateString; // Já está formatada
+    }
+    
+    if (dateString.includes('-') && dateString.length === 10) {
+      const [year, month, day] = dateString.split('-');
+      return `${day}/${month}/${year}`;
+    }
+    
+    return dateString; // Fallback
+  }
 
   // Datas únicas para o filtro
   const uniqueDates = Array.from(new Set(events.map((event) => event.date)))
