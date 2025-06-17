@@ -51,7 +51,7 @@ export default function AdminLayout({
   // Mostrar tela de carregamento enquanto verifica autenticação
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen min-w-screen items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Verificando autenticação...</h2>
           <p className="text-muted-foreground">Você será redirecionado em instantes.</p>
@@ -63,7 +63,7 @@ export default function AdminLayout({
   // Se não estiver autenticado e não estiver na página de login, mostrar tela de carregamento
   if (!session && pathname !== paths.admin.login) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen w-full items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Verificando autenticação...</h2>
           <p className="text-muted-foreground">Você será redirecionado em instantes.</p>
@@ -74,7 +74,7 @@ export default function AdminLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen flex-col">
+      <div className="flex min-h-screen w-full flex-col">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:px-6">
           {/* Botão de menu para mobile */}
           <SidebarTrigger className="md:hidden" />
