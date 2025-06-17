@@ -117,7 +117,7 @@ export default function AdminLayout({
           <AdminSidebar />
           <main className="flex w-full flex-col overflow-hidden">
             <ScrollArea className="h-[calc(100vh-3.5rem)]">
-              <div className="flex-1 space-y-4 p-5 pt-6">{children}</div>
+              <div className="flex-1 space-y-4 p-5 pt-3">{children}</div>
             </ScrollArea>
           </main>
         </div>
