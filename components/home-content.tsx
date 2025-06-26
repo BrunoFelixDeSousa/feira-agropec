@@ -50,8 +50,8 @@ export function HomeContent({ events, eventStartDate, exhibitors, statsField }: 
   const stats = [
     { label: "Expositores", value: `${statsField.totalExhibitors}+` },
     { label: "Eventos", value: `${statsField.totalEvents}+` },
-    { label: "Área", value: "30.000m²" },
-    { label: "Visitantes", value: "25.000+" },
+    { label: "Área", value: "15.800m²" },
+    { label: "Visitantes", value: "200.000+" },
   ]
 
   // Obter cor com base no tipo de evento

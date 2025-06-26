@@ -4,6 +4,7 @@ import { AlertCircle, Calendar, Edit, Info, MoreHorizontal, Tag, Trash2 } from "
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
+import { deleteNotificationAction } from "@/app/admin/notificacoes/actions"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,6 +59,7 @@ export function NotificationDataTable() {
 
   const handleDelete = (id: string) => {
     setDeleteId(id)
+    deleteNotificationAction(id)
     setIsAlertOpen(true)
   }
 
@@ -83,13 +85,17 @@ export function NotificationDataTable() {
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case "info":
+      case "INFO":
         return <Info className="h-4 w-4 text-blue-500" />
-      case "alert":
+      case "ALERT":
         return <AlertCircle className="h-4 w-4 text-red-500" />
-      case "event":
-        return <Calendar className="h-4 w-4 text-green-500" />
-      case "promo":
+      case "WARNING":
+        return <AlertCircle className="h-4 w-4 text-yellow-500" />
+      case "URGENT":
+        return <AlertCircle className="h-4 w-4 text-red-600" />
+      case "SCHEDULE_CHANGE":
+        return <Calendar className="h-4 w-4 text-orange-500" />
+      case "REMINDER":
         return <Tag className="h-4 w-4 text-purple-500" />
       default:
         return <Info className="h-4 w-4" />
@@ -98,14 +104,18 @@ export function NotificationDataTable() {
 
   const getTypeLabel = (type: string) => {
     switch (type) {
-      case "info":
+      case "INFO":
         return "Informação"
-      case "alert":
+      case "ALERT":
         return "Alerta"
-      case "event":
-        return "Evento"
-      case "promo":
-        return "Promoção"
+      case "WARNING":
+        return "Aviso"
+      case "URGENT":
+        return "Urgente"
+      case "SCHEDULE_CHANGE":
+        return "Alteração de Programação"
+      case "REMINDER":
+        return "Lembrete"
       default:
         return type
     }
@@ -113,13 +123,17 @@ export function NotificationDataTable() {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case "info":
+      case "INFO":
         return "bg-blue-100 text-blue-800 hover:bg-blue-200"
-      case "alert":
+      case "ALERT":
         return "bg-red-100 text-red-800 hover:bg-red-200"
-      case "event":
-        return "bg-green-100 text-green-800 hover:bg-green-200"
-      case "promo":
+      case "WARNING":
+        return "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+      case "URGENT":
+        return "bg-red-200 text-red-900 hover:bg-red-300"
+      case "SCHEDULE_CHANGE":
+        return "bg-orange-100 text-orange-800 hover:bg-orange-200"
+      case "REMINDER":
         return "bg-purple-100 text-purple-800 hover:bg-purple-200"
       default:
         return "bg-gray-100 text-gray-800 hover:bg-gray-200"
@@ -141,7 +155,7 @@ export function NotificationDataTable() {
             <TableRow>
               <TableHead className="w-[250px]">Título</TableHead>
               <TableHead>Tipo</TableHead>
-              <TableHead>Data/Hora</TableHead>
+              <TableHead>Data</TableHead>
               <TableHead>Lida</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
@@ -161,10 +175,22 @@ export function NotificationDataTable() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  {notification.timestamp ?
-                    new Date(notification.timestamp).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) :
-                    "-"
-                  }
+                  {notification.timestamp ? (
+                    (() => {
+                      // Garantir que a data seja interpretada corretamente
+                      const date = new Date(notification.timestamp)
+                      // Verificar se a data é válida
+                      if (isNaN(date.getTime())) {
+                        return "Data inválida"
+                      }
+                      return date.toLocaleDateString("pt-BR", { 
+                        day: "2-digit", 
+                        month: "2-digit", 
+                        year: "numeric",
+                        timeZone: "America/Sao_Paulo"
+                      })
+                    })()
+                  ) : "-"}
                 </TableCell>
                 <TableCell>
                   <Badge variant={notification.read ? "default" : "secondary"}>

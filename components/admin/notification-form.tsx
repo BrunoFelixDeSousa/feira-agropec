@@ -58,16 +58,36 @@ export function NotificationForm({ defaultValues }: NotificationFormProps) {
     setIsSubmitting(true)
 
     try {
-      // Simulação de envio para API
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const isEditing = !!defaultValues?.id
+      const url = isEditing ? `/api/notifications/${defaultValues.id}` : "/api/notifications"
+      const method = isEditing ? "PUT" : "POST"
 
-      console.log(values)
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: values.title,
+          message: values.message,
+          type: values.type,
+          timestamp: values.timestamp.toISOString(),
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Erro ao salvar notificação")
+      }
+
+      const result = await response.json()
+
       toast({
-        title: "Notificação salva com sucesso!",
-        description: `A notificação "${values.title}" foi salva.`,
+        title: isEditing ? "Notificação atualizada!" : "Notificação criada!",
+        description: `A notificação "${values.title}" foi ${isEditing ? 'atualizada' : 'criada'} com sucesso.`,
       })
 
       router.push(paths.admin.notificacoes)
+      router.refresh()
     } catch (error) {
       console.error(error)
       toast({
@@ -111,10 +131,12 @@ export function NotificationForm({ defaultValues }: NotificationFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="info">Informação</SelectItem>
-                    <SelectItem value="alert">Alerta</SelectItem>
-                    <SelectItem value="event">Evento</SelectItem>
-                    <SelectItem value="promo">Promoção</SelectItem>
+                    <SelectItem value="INFO">Informação</SelectItem>
+                    <SelectItem value="ALERT">Alerta</SelectItem>
+                    <SelectItem value="WARNING">Aviso</SelectItem>
+                    <SelectItem value="URGENT">Urgente</SelectItem>
+                    <SelectItem value="SCHEDULE_CHANGE">Alteração de Programação</SelectItem>
+                    <SelectItem value="REMINDER">Lembrete</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -156,7 +178,7 @@ export function NotificationForm({ defaultValues }: NotificationFormProps) {
                   </FormControl>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                  <Calendar mode="single" selected={field.value} onSelect={field.onChange} />
                 </PopoverContent>
               </Popover>
               <FormDescription>Data em que a notificação será enviada (se agendada) ou foi criada</FormDescription>

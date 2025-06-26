@@ -1,5 +1,5 @@
 import { NotificationForm } from "@/components/admin/notification-form"
-import { mockNotifications } from "@/lib/mock-data"
+import { getNotificationById } from "@/lib/db"
 import { notFound } from "next/navigation"
 
 export default async function EditNotificationPage({ params }: { params: Promise<{ id: string }> }) {
@@ -15,8 +15,9 @@ export default async function EditNotificationPage({ params }: { params: Promise
     )
   }
 
-  // Caso contrário, buscamos a notificação pelo ID
-  const notification = mockNotifications.find((n) => n.id === id)
+  try {
+    // Caso contrário, buscamos a notificação pelo ID
+    const notification = await getNotificationById(id)
 
   if (!notification) {
     notFound()
@@ -28,4 +29,9 @@ export default async function EditNotificationPage({ params }: { params: Promise
       <NotificationForm defaultValues={notification} />
     </div>
   )
+  } catch (error) {
+    console.error("Erro ao buscar notificação:", error)
+    notFound()
+  }
+  
 }

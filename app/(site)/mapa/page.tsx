@@ -13,7 +13,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Exhibitor } from "@/lib/types"
-import { ChevronLeft, Info, Layers, MapPin, Navigation, Search, X, ZoomIn, ZoomOut } from "lucide-react"
+import { ChevronLeft, Info, MapPin, Navigation, Search, X, ZoomIn, ZoomOut } from "lucide-react"
 import { useEffect, useState } from "react"
 
 export default function MapaPage() {
@@ -100,12 +100,12 @@ export default function MapaPage() {
       <div className="px-4 flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Mapa da Feira</h1>
         <div className="flex gap-1">
-          <Button variant="outline" size="icon" onClick={() => setShowSearch(true)}>
+          {/* <Button variant="outline" size="icon" onClick={() => setShowSearch(true)}>
             <Search className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="icon" onClick={() => setShowLegend(!showLegend)}>
+          </Button> */}
+          {/* <Button variant="outline" size="icon" onClick={() => setShowLegend(!showLegend)}>
             <Layers className="h-4 w-4" />
-          </Button>
+          </Button> */}
         </div>
       </div>
 
