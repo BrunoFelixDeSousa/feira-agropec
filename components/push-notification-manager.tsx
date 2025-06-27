@@ -1,148 +1,152 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Bell, BellOff } from "lucide-react"
-import { toast } from "@/hooks/use-toast"
-import { urlBase64ToUint8Array, isPushNotificationSupported, requestNotificationPermission } from "@/lib/push-utils"
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Bell, BellOff } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import { urlBase64ToUint8Array, isPushNotificationSupported, requestNotificationPermission } from "@/lib/push-utils";
 
 interface PushNotificationManagerProps {
-  vapidPublicKey?: string
+  vapidPublicKey?: string;
 }
 
-export function PushNotificationManager({ 
-  vapidPublicKey = "BEl62iUYgUivxIkv69yViEuiBIa40HI95Q9YRILIiMqK-BYJeL9w0s0XDMK7l_LCE-FZbvW3HCBLe-S4lw4V6kM" 
+export function PushNotificationManager({
+  vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
 }: PushNotificationManagerProps) {
-  const [isSupported, setIsSupported] = useState(false)
-  const [isSubscribed, setIsSubscribed] = useState(false)
-  const [subscription, setSubscription] = useState<PushSubscription | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [isSupported, setIsSupported] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [subscription, setSubscription] = useState<PushSubscription | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setIsSupported(isPushNotificationSupported())
+    setIsSupported(isPushNotificationSupported());
     if (isPushNotificationSupported()) {
-      checkSubscription()
+      checkSubscription();
     }
-  }, [])
+  }, []);
 
   const checkSubscription = async () => {
     try {
-      const registration = await navigator.serviceWorker.ready
-      const sub = await registration.pushManager.getSubscription()
-      
+      const registration = await navigator.serviceWorker.ready;
+      const sub = await registration.pushManager.getSubscription();
+
       if (sub) {
-        setSubscription(sub)
-        setIsSubscribed(true)
+        setSubscription(sub);
+        setIsSubscribed(true);
       }
     } catch (error) {
-      console.error('Erro ao verificar subscription:', error)
+      console.error("Erro ao verificar subscription:", error);
     }
-  }
+  };
 
   const requestPermission = async () => {
-    return await requestNotificationPermission()
-  }
+    return await requestNotificationPermission();
+  };
 
   const subscribeUser = async () => {
-    setLoading(true)
-    
+    setLoading(true);
+
     try {
-      const hasPermission = await requestPermission()
+      const hasPermission = await requestPermission();
       if (!hasPermission) {
-        setLoading(false)
-        return
+        setLoading(false);
+        return;
       }
 
       // Registrar service worker
-      const registration = await navigator.serviceWorker.register('/sw.js')
-      await navigator.serviceWorker.ready
+      const registration = await navigator.serviceWorker.register("/sw.js");
+      await navigator.serviceWorker.ready;
+
+      if (!vapidPublicKey) {
+        throw new Error("VAPID keys não definidas nas variáveis de ambiente!");
+      }
 
       // Criar subscription
       const sub = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: convertVapidKey(vapidPublicKey)
-      })
+        applicationServerKey: convertVapidKey(vapidPublicKey),
+      });
 
       // Enviar subscription para o servidor
-      const response = await fetch('/api/notifications/subscribe', {
-        method: 'POST',
+      const response = await fetch("/api/notifications/subscribe", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(sub.toJSON())
-      })
+        body: JSON.stringify(sub.toJSON()),
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (result.success) {
-        setSubscription(sub)
-        setIsSubscribed(true)
+        setSubscription(sub);
+        setIsSubscribed(true);
         toast({
           title: "Inscrito com sucesso!",
           description: "Você receberá notificações sobre eventos importantes.",
-        })
+        });
       } else {
-        throw new Error(result.error)
+        throw new Error(result.error);
       }
     } catch (error) {
-      console.error('Erro ao inscrever usuário:', error)
+      console.error("Erro ao inscrever usuário:", error);
       toast({
         title: "Erro",
         description: "Não foi possível ativar as notificações. Tente novamente.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const unsubscribeUser = async () => {
-    setLoading(true)
-    
+    setLoading(true);
+
     try {
       if (subscription) {
         // Cancelar subscription no navegador
-        await subscription.unsubscribe()
+        await subscription.unsubscribe();
 
         // Remover do servidor
-        const response = await fetch('/api/notifications/unsubscribe', {
-          method: 'POST',
+        const response = await fetch("/api/notifications/unsubscribe", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify({ endpoint: subscription.endpoint })
-        })
+          body: JSON.stringify({ endpoint: subscription.endpoint }),
+        });
 
-        const result = await response.json()
+        const result = await response.json();
 
         if (result.success) {
-          setSubscription(null)
-          setIsSubscribed(false)
+          setSubscription(null);
+          setIsSubscribed(false);
           toast({
             title: "Desinscrito com sucesso!",
             description: "Você não receberá mais notificações push.",
-          })
+          });
         } else {
-          throw new Error(result.error)
+          throw new Error(result.error);
         }
       }
     } catch (error) {
-      console.error('Erro ao cancelar inscrição:', error)
+      console.error("Erro ao cancelar inscrição:", error);
       toast({
         title: "Erro",
         description: "Não foi possível desativar as notificações. Tente novamente.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // Função para converter VAPID key (mantida localmente por simplicidade)
   const convertVapidKey = (base64String: string) => {
-    return urlBase64ToUint8Array(base64String)
-  }
+    return urlBase64ToUint8Array(base64String);
+  };
 
   if (!isSupported) {
     return (
@@ -152,12 +156,10 @@ export function PushNotificationManager({
             <BellOff className="h-5 w-5" />
             Notificações Push
           </CardTitle>
-          <CardDescription>
-            Seu navegador não suporta notificações push.
-          </CardDescription>
+          <CardDescription>Seu navegador não suporta notificações push.</CardDescription>
         </CardHeader>
       </Card>
-    )
+    );
   }
 
   return (
@@ -174,14 +176,11 @@ export function PushNotificationManager({
       <CardContent>
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-medium">
-              Status: {isSubscribed ? 'Ativo' : 'Inativo'}
-            </p>
+            <p className="text-sm font-medium">Status: {isSubscribed ? "Ativo" : "Inativo"}</p>
             <p className="text-xs text-muted-foreground">
-              {isSubscribed 
-                ? 'Você receberá notificações push deste site' 
-                : 'Ative para receber notificações importantes'
-              }
+              {isSubscribed
+                ? "Você receberá notificações push deste site"
+                : "Ative para receber notificações importantes"}
             </p>
           </div>
           <Button
@@ -189,10 +188,10 @@ export function PushNotificationManager({
             disabled={loading}
             variant={isSubscribed ? "outline" : "default"}
           >
-            {loading ? "Carregando..." : (isSubscribed ? "Desativar" : "Ativar")}
+            {loading ? "Carregando..." : isSubscribed ? "Desativar" : "Ativar"}
           </Button>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
