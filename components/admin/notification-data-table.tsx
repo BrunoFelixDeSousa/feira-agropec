@@ -1,6 +1,6 @@
 "use client"
 
-import { AlertCircle, Calendar, Edit, Info, MoreHorizontal, Tag, Trash2 } from "lucide-react"
+import { AlertCircle, Calendar, Edit, Info, MoreHorizontal, Send, Tag, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
@@ -75,12 +75,46 @@ export function NotificationDataTable() {
     setIsAlertOpen(false)
   }
 
-  const handleSend = (id: string) => {
-    setNotifications(notifications.map((n) => (n.id === id ? { ...n, status: "sent" } : n)))
-    toast({
-      title: "Notificação enviada",
-      description: "A notificação foi enviada com sucesso.",
-    })
+  const handleSend = async (id: string) => {
+    try {
+      const notification = notifications.find(n => n.id === id)
+      if (!notification) return
+
+      const response = await fetch("/api/notifications/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          notificationId: id,
+          title: notification.title,
+          message: notification.message,
+          type: notification.type,
+          url: "/notificacoes"
+        }),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        toast({
+          title: "Notificação enviada",
+          description: `Push notification enviada para ${result.sent} usuários.`,
+        })
+      } else {
+        toast({
+          title: "Erro",
+          description: result.error || "Erro ao enviar notificação.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Erro ao enviar push notification.",
+        variant: "destructive",
+      })
+    }
   }
 
   const getTypeIcon = (type: string) => {
@@ -211,6 +245,9 @@ export function NotificationDataTable() {
                         Copiar ID
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => handleSend(notification.id)} className="text-blue-600">
+                        <Send className="mr-2 h-4 w-4" /> Enviar Push
+                      </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link href={`/admin/notificacoes/${notification.id}`}>
                           <Edit className="mr-2 h-4 w-4" /> Editar

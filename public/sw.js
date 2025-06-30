@@ -1,39 +1,39 @@
 // Service Worker para PWA e notificações push
 
 // Cache de arquivos para funcionamento offline
-const CACHE_NAME = "agropec"
-const urlsToCache = ["/", "/mapa", "/programacao", "/expositores", "/notificacoes"]
+const CACHE_NAME = "agropec";
+const urlsToCache = ["/", "/mapa", "/programacao", "/expositores", "/notificacoes"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(urlsToCache)
-    }),
-  )
-})
+      return cache.addAll(urlsToCache);
+    })
+  );
+});
 
 self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
       // Cache hit - return response
       if (response) {
-        return response
+        return response;
       }
-      return fetch(event.request)
-    }),
-  )
-})
+      return fetch(event.request);
+    })
+  );
+});
 
 // Gerenciamento de notificações push
 self.addEventListener("push", (event) => {
   if (event.data) {
     try {
-      const data = event.data.json()
+      const data = event.data.json();
 
       const options = {
         body: data.message || data.body,
-        icon: "/icons/icon-192x192.png",
-        badge: "/icons/badge-96x96.png",
+        icon: "/logo-agropec.png",
+        badge: "/logo-agropec.png",
         vibrate: [100, 50, 100],
         data: {
           dateOfArrival: Date.now(),
@@ -52,21 +52,21 @@ self.addEventListener("push", (event) => {
             icon: "/icons/xmark.png",
           },
         ],
-      }
+      };
 
-      event.waitUntil(self.registration.showNotification(data.title, options))
+      event.waitUntil(self.registration.showNotification(data.title, options));
     } catch (error) {
-      console.error("Erro ao processar notificação push:", error)
+      console.error("Erro ao processar notificação push:", error);
     }
   }
-})
+});
 
 self.addEventListener("notificationclick", (event) => {
-  event.notification.close()
+  event.notification.close();
 
   if (event.action === "explore") {
-    const url = event.notification.data.url || "/"
+    const url = event.notification.data.url || "/";
 
-    event.waitUntil(clients.openWindow(url))
+    event.waitUntil(clients.openWindow(url));
   }
-})
+});
